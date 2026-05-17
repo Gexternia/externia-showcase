@@ -739,23 +739,74 @@
 
   .thumb.clinique {
     background:
-      radial-gradient(circle at 70% 30%, rgba(241,193,0,.28) 0%, transparent 55%),
-      linear-gradient(135deg, #2a1f25 0%, #1a1316 100%);
+      radial-gradient(ellipse at 70% 30%, rgba(255,182,193,.32) 0%, transparent 55%),
+      radial-gradient(ellipse at 30% 70%, rgba(255,138,170,.18) 0%, transparent 55%),
+      linear-gradient(135deg, #2e1f25 0%, #1a1316 100%);
     display: flex; align-items: center; justify-content: center;
   }
   .thumb.clinique .letter {
-    width: 60%; aspect-ratio: 5/4;
-    background: linear-gradient(180deg, #f5efe6 0%, #ece5d8 100%);
+    width: 65%; aspect-ratio: 4/5;
+    background: linear-gradient(180deg, #fbfaf6 0%, #f2ede3 100%);
     border-radius: 6px;
-    padding: 18px 22px;
-    box-shadow: 0 30px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(0,0,0,.2);
+    padding: 18px 20px 14px;
+    box-shadow:
+      0 30px 60px rgba(0,0,0,.55),
+      0 0 0 1px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,0.6);
     transform: rotate(-2.5deg);
     position: relative;
+    color: #1a1316;
+    font-family: "Work Sans", sans-serif;
+    display: flex; flex-direction: column;
+    overflow: hidden;
   }
-  .thumb.clinique .letter::before {
-    content: ""; display: block; width: 28%; height: 5px;
-    background: var(--grad); border-radius: 3px;
-    margin-bottom: 14px;
+  .thumb.clinique .letter-brand {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    color: #0a0a0b;
+  }
+  .thumb.clinique .letter-sub {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 8.5px;
+    font-style: italic;
+    text-align: center;
+    color: #555;
+    margin-top: 2px;
+  }
+  .thumb.clinique .letter-rule {
+    width: 24px; height: 1px;
+    background: #888;
+    margin: 6px auto;
+  }
+  .thumb.clinique .letter-to {
+    font-size: 7px;
+    color: #2a2226;
+    margin: 4px 0 2px;
+    font-weight: 500;
+  }
+  .thumb.clinique .letter-body {
+    font-size: 5.6px;
+    line-height: 1.4;
+    color: #44383d;
+    margin: 0;
+    text-align: justify;
+    flex: 1;
+    overflow: hidden;
+  }
+  .thumb.clinique .letter-sign {
+    font-family: "Brush Script MT", "Lucida Handwriting", cursive;
+    font-size: 9px;
+    text-align: right;
+    color: #2a2226;
+    margin: 4px 0 2px;
+  }
+  .thumb.clinique .letter-social {
+    font-size: 5.5px;
+    text-align: center;
+    color: #777;
+    letter-spacing: 0.04em;
   }
   .thumb.clinique .letter .ll {
     display: block; height: 4px; border-radius: 2px;
@@ -1849,6 +1900,67 @@
   .grid-b > .tile:nth-child(5) .thumb { aspect-ratio: 32/9; }
 
   /* ============== Section C — Turespaña ============== */
+  /* Video banner that opens the section */
+  .tu-banner {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 28px;
+    min-height: 380px;
+    border: 1px solid var(--outline);
+    display: flex; align-items: flex-end;
+    isolation: isolate;
+  }
+  .tu-video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: saturate(1.05);
+  }
+  .tu-banner-overlay {
+    position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(0deg, rgba(10,10,11,0.92) 0%, rgba(10,10,11,0.55) 45%, rgba(10,10,11,0.18) 100%),
+      linear-gradient(90deg, rgba(10,10,11,0.55) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .tu-banner-content {
+    position: relative; z-index: 2;
+    padding: 40px 44px 38px;
+    width: 100%;
+  }
+  .tu-banner-content .eyebrow { margin-bottom: 14px; }
+  .tu-banner-h {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(34px, 4.4vw, 50px);
+    line-height: 1.05;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 0 0 14px;
+    max-width: 22ch;
+    text-wrap: balance;
+    color: var(--on-surface);
+  }
+  .tu-banner-h .grad {
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+  }
+  .tu-banner-p {
+    font-size: 18px;
+    line-height: 1.55;
+    color: rgba(229,226,227,0.78);
+    max-width: 64ch;
+    margin: 0;
+  }
+  @media (max-width: 720px) {
+    .tu-banner { min-height: 280px; }
+    .tu-banner-content { padding: 26px 24px; }
+    .tu-banner-h { font-size: 28px; }
+    .tu-banner-p { font-size: 15px; }
+  }
+
   .tu-hero {
     margin-bottom: 22px;
     padding: 32px 38px;
@@ -2796,7 +2908,7 @@
     <div class="grid-b">
 
       <a class="card tile" href="https://comic-ai-s1ca.onrender.com" target="_blank" rel="noopener">
-        <div class="thumb kpmg shot-slot" data-shot-slot="kpmg">
+        <div class="thumb kpmg shot-slot has-image" data-shot-slot="kpmg">
           <span class="corner-tag logo-slot" data-logo-slot="kpmg">
             <span class="dot"></span>
             <span class="text">Cliente · KPMG</span>
@@ -2807,7 +2919,7 @@
             <div class="panel hl">Panel 02</div>
             <div class="panel">Panel 03</div>
           </div>
-          <img class="shot-img" alt="ComicGen screenshot" />
+          <img class="shot-img" src="assets/comicgen-sample.png" alt="ComicGen · cómic generado para evento" style="object-position: center top;" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="kpmg">
             <span class="plus">+</span>
             <span class="lbl">Subir captura ComicGen</span>
@@ -2838,10 +2950,14 @@
             <img class="logo-img" alt="Clinique" />
           </span>
           <div class="letter">
-            <span class="ll w1"></span>
-            <span class="ll w2"></span>
-            <span class="ll w3"></span>
-            <span class="ll w4"></span>
+            <div class="letter-brand">CLINIQUE</div>
+            <div class="letter-sub">Glow gracias a ti.</div>
+            <div class="letter-rule"></div>
+            <div class="letter-to">Querida Anamari</div>
+            <p class="letter-body">Gracias por ser la mejor madre. Quería darte las gracias de verdad por estar siempre ahí, pase lo que pase. Me da mucha tranquilidad saber que puedo contar contigo para cualquier cosa…</p>
+            <div class="letter-sign">Guillermo</div>
+            <div class="letter-rule"></div>
+            <div class="letter-social">⊙ @clinique_es &nbsp;·&nbsp; ♪ @clinique</div>
           </div>
           <img class="shot-img" alt="Clinique cartas screenshot" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="clinique">
@@ -2907,7 +3023,7 @@
       </a>
 
       <a class="card tile" href="https://taller-ia-ing.onrender.com" target="_blank" rel="noopener">
-        <div class="thumb sb shot-slot" data-shot-slot="smartbrush">
+        <div class="thumb sb shot-slot has-image" data-shot-slot="smartbrush">
           <span class="corner-tag logo-slot" data-logo-slot="smartbrush">
             <span class="dot"></span>
             <span class="text">Taller IA · ING</span>
@@ -2919,7 +3035,7 @@
             <span class="brush b2"></span>
             <span class="brush b3"></span>
           </div>
-          <img class="shot-img" alt="SmartBrush screenshot" />
+          <img class="shot-img" src="assets/smartbrush-caricature.png" alt="Caricatura generada en vivo" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="smartbrush">
             <span class="plus">+</span>
             <span class="lbl">Subir captura Smart Brush</span>
@@ -2943,7 +3059,7 @@
       </a>
 
       <a class="card tile" href="https://deckcraft-3u04.onrender.com" target="_blank" rel="noopener">
-        <div class="thumb deck shot-slot" data-shot-slot="deckcraft">
+        <div class="thumb deck shot-slot has-image" data-shot-slot="deckcraft">
           <span class="corner-tag logo-slot" data-logo-slot="deckcraft">
             <span class="dot"></span>
             <span class="text">Externia · Tooling interno</span>
@@ -2954,7 +3070,7 @@
             <span class="slide s2"></span>
             <span class="slide s1"></span>
           </div>
-          <img class="shot-img" alt="DeckCraft screenshot" />
+          <img class="shot-img" src="assets/deckcraft-sample.png" alt="DeckCraft · slide generada" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="deckcraft">
             <span class="plus">+</span>
             <span class="lbl">Subir captura DeckCraft</span>
@@ -2987,18 +3103,24 @@
         <span class="cat-num">C / 03</span>
         <h2 class="cat-title">Caso público tier-1 · Turespaña</h2>
       </div>
-      <span class="cat-meta">Concurso ganado · Mayo 2026</span>
+      <span class="cat-meta">Concurso ganado · 2025</span>
     </div>
 
-    <div style="margin-bottom: 28px;">
-      <div class="eyebrow">Cómo se ganó la V Convención</div>
-      <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 46px; line-height: 1.05; font-weight: 600; letter-spacing: -0.02em; margin: 14px 0 16px; max-width: 22ch; text-wrap: balance;">
-        V Convención de Turespaña 2026.<br/>
-        Cómo <span style="background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;">Externa</span> la ganó.
-      </h2>
-      <p style="font-size: 18px; color: var(--on-surface-dim); max-width: 64ch; margin: 0;">
-        Y cómo Externia hizo posible una propuesta más rica de lo que cualquier agencia podría permitirse meter en cada concurso.
-      </p>
+    <div class="tu-banner">
+      <video class="tu-video" autoplay loop muted playsinline preload="auto" aria-hidden="true">
+        <source src="assets/turespana-stage.mp4" type="video/mp4" />
+      </video>
+      <div class="tu-banner-overlay"></div>
+      <div class="tu-banner-content">
+        <div class="eyebrow">Cómo se ganó la V Convención</div>
+        <h2 class="tu-banner-h">
+          V Convención de Turespaña 2025.<br/>
+          Cómo <span class="grad">Externa</span> la ganó.
+        </h2>
+        <p class="tu-banner-p">
+          Y cómo Externia hizo posible una propuesta más rica de lo que cualquier agencia podría permitirse meter en cada concurso.
+        </p>
+      </div>
     </div>
 
     <article class="card tu-hero">
