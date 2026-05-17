@@ -115,6 +115,58 @@
     border-bottom: 1px solid var(--outline);
     margin-bottom: 64px;
   }
+  /* Centered variant: title huge in the middle, stats in a horizontal band below */
+  .hero.hero-center {
+    display: block;
+    text-align: center;
+    padding: 48px 0 64px;
+  }
+  .hero.hero-center .eyebrow {
+    margin: 0 auto 24px;
+    display: inline-flex;
+  }
+  .hero.hero-center h1.hero-title {
+    margin: 0 auto 22px;
+    max-width: 18ch;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .hero.hero-center p.lede {
+    margin: 0 auto 56px;
+    max-width: 56ch;
+    text-align: center;
+  }
+  .hero-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    max-width: 920px;
+    margin: 0 auto;
+    border-top: 1px solid var(--outline);
+    border-bottom: 1px solid var(--outline);
+    padding: 0;
+  }
+  .hero-stats-row .stat {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    padding: 22px 18px;
+    text-align: center;
+    border-right: 1px solid var(--outline);
+  }
+  .hero-stats-row .stat:last-child { border-right: 0; }
+  .hero-stats-row .stat .k {
+    font-size: 38px;
+  }
+  .hero-stats-row .stat .l {
+    margin-top: 10px;
+  }
+  @media (max-width: 720px) {
+    .hero-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .hero-stats-row .stat:nth-child(2) { border-right: 0; }
+    .hero-stats-row .stat:nth-child(1), .hero-stats-row .stat:nth-child(2) { border-bottom: 1px solid var(--outline); }
+  }
   .eyebrow {
     font-family: "Space Grotesk", sans-serif;
     font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
@@ -336,6 +388,193 @@
   .btn.primary .arr { color: #1a0008; }
   .btn.primary:hover {
     box-shadow: 0 0 32px rgba(255,58,138,.45), 0 0 60px rgba(255,138,61,.25);
+  }
+
+  /* Eventoplus + FinderAI logo pair header */
+  .ep-header {
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .logo-pair {
+    display: inline-flex; align-items: center; gap: 14px;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));
+    border: 1px solid var(--outline-2);
+    border-radius: 12px;
+  }
+  .logo-pair .lp-evento {
+    height: 36px; width: 36px; border-radius: 8px;
+    display: block;
+  }
+  .logo-pair .lp-finder {
+    height: 28px; width: auto; max-width: 140px;
+    display: block;
+    background: #fff;
+    border-radius: 6px;
+    padding: 3px 8px;
+  }
+  .logo-pair .lp-plus {
+    color: var(--on-surface-faint);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 16px; font-weight: 500;
+  }
+
+  /* Interactive KPI table (replaces the bar chart + geo on Eventoplus right panel) */
+  .kpi-table-card {
+    padding: 24px 28px;
+    display: flex; flex-direction: column;
+    gap: 14px;
+    background:
+      radial-gradient(circle 320px at var(--mx, 50%) var(--my, 50%), rgba(255,58,138,0.10), transparent 60%),
+      var(--void-2);
+    transition: background .15s linear;
+  }
+  .kpi-table-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 14px; flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--outline);
+  }
+  .kt-label {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px; letter-spacing: 0.12em;
+    color: var(--on-surface-faint);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .kt-title {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 19px; font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0; color: var(--on-surface);
+  }
+  .kt-wow {
+    align-self: center;
+    padding: 6px 12px;
+    border-radius: 9999px;
+    border: 1px solid rgba(43,212,126,0.4);
+    background: rgba(43,212,126,0.10);
+    color: #6fe3a8;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+
+  .kpi-table {
+    display: flex; flex-direction: column;
+    gap: 6px;
+  }
+  .kpi-row-h, .kpi-row-i {
+    display: grid;
+    grid-template-columns: 1.6fr 0.7fr 0.7fr 0.9fr;
+    gap: 10px;
+    align-items: center;
+  }
+  .kpi-row-h {
+    padding: 6px 14px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10.5px;
+    color: var(--on-surface-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .kpi-row-i {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--outline);
+    background: rgba(255,255,255,0.025);
+    text-decoration: none;
+    color: var(--on-surface);
+    transition: transform .22s cubic-bezier(.2,.75,.2,1), border-color .22s ease, background .22s ease, box-shadow .22s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-row-i.hot {
+    border-color: rgba(255,87,26,0.4);
+    background: linear-gradient(90deg, rgba(255,138,61,0.06), rgba(255,58,138,0.03));
+  }
+  .kpi-row-i:hover {
+    transform: translateX(4px);
+    border-color: rgba(255,138,61,0.6);
+    background: linear-gradient(90deg, rgba(255,138,61,0.10), rgba(255,58,138,0.05));
+    box-shadow: 0 0 24px rgba(255,138,61,0.18), 0 0 0 1px rgba(255,138,61,0.25);
+  }
+  .kpi-row-i::after {
+    content: "";
+    position: absolute; top: 0; left: -120%;
+    width: 60%; height: 100%;
+    background: linear-gradient(110deg, transparent, rgba(255,255,255,.06), transparent);
+    transition: left .9s cubic-bezier(.2,.75,.2,1);
+    pointer-events: none;
+  }
+  a.kpi-row-i:hover::after { left: 160%; }
+
+  .kpi-row-i .kn {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 14.5px; font-weight: 500;
+    color: var(--on-surface);
+  }
+  .kpi-row-i .kw {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.02em;
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    line-height: 1;
+    display: flex; flex-direction: column;
+  }
+  .kpi-row-i .kp {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 14px;
+    color: var(--on-surface-faint);
+    display: flex; flex-direction: column;
+  }
+  .kpi-row-i .ks {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 9.5px;
+    color: var(--on-surface-faint);
+    letter-spacing: 0.04em;
+    margin-top: 2px;
+    text-transform: lowercase;
+    -webkit-text-fill-color: var(--on-surface-faint);
+  }
+  .kpi-row-i .kv {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 9999px;
+    text-align: center;
+    justify-self: end;
+    min-width: 70px;
+    transition: box-shadow .22s ease;
+  }
+  .kpi-row-i .kv.positive {
+    background: rgba(43,212,126,0.12);
+    color: #6fe3a8;
+    border: 1px solid rgba(43,212,126,0.30);
+  }
+  .kpi-row-i .kv.stable {
+    background: rgba(229,226,227,0.04);
+    color: var(--on-surface-faint);
+    border: 1px solid var(--outline);
+  }
+  .kpi-row-i:hover .kv.positive { box-shadow: 0 0 14px rgba(43,212,126,0.35); }
+
+  .kpi-table-foot {
+    border-top: 1px dashed var(--outline);
+    padding-top: 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    color: var(--on-surface-faint);
+    letter-spacing: 0.04em;
+  }
+  .kpi-table-foot b {
+    color: var(--on-surface);
+    background: var(--grad);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
   }
 
   /* right panel mock chart for eventoplus */
@@ -815,6 +1054,23 @@
     height: clamp(80px, 11vw, 124px);
     flex-shrink: 0;
     filter: drop-shadow(0 12px 40px rgba(255,58,138,0.35));
+  }
+  /* Logo video loop (replaces the SVG icon + xternia type-in) */
+  .cover-video {
+    width: clamp(280px, 50vw, 720px);
+    height: auto;
+    max-height: 56vh;
+    display: block;
+    object-fit: contain;
+    filter: drop-shadow(0 20px 60px rgba(255,58,138,0.35));
+    will-change: transform, opacity;
+    background: transparent;
+  }
+  @media (max-width: 720px) {
+    .cover-video { width: 86vw; max-height: 44vh; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cover-video { animation: none !important; }
   }
   .cover-icon .ci-bar {
     transform-origin: 4px center;
@@ -2267,26 +2523,9 @@
   <div class="cover-inner">
     <div class="cover-eyebrow">▲ Externia · 2026</div>
     <div class="cover-mark">
-      <svg class="cover-icon" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <defs>
-          <linearGradient id="coverBrandGrad" x1="0" y1="0" x2="40" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0" stop-color="#FFC12D"/>
-            <stop offset="0.28" stop-color="#F7A361"/>
-            <stop offset="0.55" stop-color="#EE847B"/>
-            <stop offset="0.80" stop-color="#DE3B84"/>
-            <stop offset="1" stop-color="#D6007D"/>
-          </linearGradient>
-        </defs>
-        <g fill="url(#coverBrandGrad)">
-          <rect class="ci-bar ci-bar-1" x="4" y="7"  width="32" height="5"/>
-          <rect class="ci-bar ci-bar-2" x="4" y="17" width="22" height="5"/>
-          <rect class="ci-bar ci-bar-3" x="4" y="27" width="32" height="5"/>
-          <circle class="ci-dot" cx="33" cy="19.5" r="2.5"/>
-        </g>
-      </svg>
-      <h1 class="cover-word" aria-label="externia">
-        <span class="ltr">x</span><span class="ltr">t</span><span class="ltr">e</span><span class="ltr">r</span><span class="ltr">n</span><span class="ltr">i</span><span class="ltr">a</span>
-      </h1>
+      <video class="cover-video" autoplay loop muted playsinline preload="auto" aria-label="Externia">
+        <source src="assets/externia-sin-fondo.webm" type="video/webm" />
+      </video>
     </div>
 
     <p class="cover-tagline">
@@ -2333,26 +2572,22 @@
     <span>Modo edición · pulsa los slots para subir logos y screenshots reales · todo queda guardado en este navegador</span>
   </div>
 
-  <section class="hero">
-    <div>
-      <div class="eyebrow">No es un deck · es lo que ya opera</div>
-      <h1 class="hero-title">
-        <span class="line"><span class="inner">Producto en producción,</span></span>
-        <span class="line"><span class="inner">activaciones que la</span></span>
-        <span class="line"><span class="inner">gente <span class="grad">toca</span>, e</span></span>
-        <span class="line"><span class="inner">investigación abierta.</span></span>
-      </h1>
-      <p class="lede">
-        Una muestra en vivo del trabajo de Externia. Cliente recurrente facturado, activaciones públicas para marcas, y la I+D que estamos explorando. Todo lo de aquí está accesible — toca cualquier tile.
-      </p>
-    </div>
-    <div class="hero-side">
+  <section class="hero hero-center">
+    <div class="eyebrow">No es un deck · es lo que ya opera</div>
+    <h1 class="hero-title">
+      <span class="line"><span class="inner">Lo que estamos construyendo</span></span>
+      <span class="line"><span class="inner">en <span class="grad">Externia</span>, ahora mismo.</span></span>
+    </h1>
+    <p class="lede">
+      Producto en producción, activaciones para marcas y la investigación que define el próximo salto. Todo está vivo. Todo se puede tocar.
+    </p>
+    <div class="hero-side hero-stats-row">
       <div class="stat">
         <div class="k grad" data-count="8" data-suffix="+">8+</div>
-        <div class="l">demos públicas jugables</div>
+        <div class="l">demos públicas</div>
       </div>
       <div class="stat">
-        <div class="k grad" data-count="12">12</div>
+        <div class="k grad" data-count="24">24</div>
         <div class="l">meses operando</div>
       </div>
       <div class="stat">
@@ -2361,7 +2596,7 @@
       </div>
       <div class="stat">
         <div class="k">∞</div>
-        <div class="l">blog autónomo · externia.ai</div>
+        <div class="l">blog autónomo</div>
       </div>
     </div>
   </section>
@@ -2378,16 +2613,15 @@
 
     <article class="card hero-card">
       <div class="left">
-        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-          <span class="client-mark logo-mark logo-slot" data-logo-slot="eventoplus">
-            <span class="dot"></span>
-            <span class="text">Eventoplus</span>
-            <img class="logo-img" alt="Eventoplus" />
-            <button class="logo-edit" type="button" data-upload-logo="eventoplus">Subir logo</button>
-          </span>
-          <span class="pill-live"><span class="pulse"></span>Live · operando desde Ene · 26</span>
+        <div class="ep-header">
+          <div class="logo-pair">
+            <img src="assets/eventoplus-logo.webp" alt="Eventoplus" class="lp-evento" />
+            <span class="lp-plus">×</span>
+            <img src="assets/finderia-logo.webp" alt="FinderAI" class="lp-finder" />
+          </div>
+          <span class="pill-live"><span class="pulse"></span>Cliente activo · feb 2026</span>
         </div>
-        <h2>FinderAI · El stack conversacional de Eventoplus.</h2>
+        <h2>El stack conversacional<br/>de <span style="background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;">Eventoplus</span>.</h2>
         <p class="desc">
           Chatbot de búsqueda + dashboard analítico + informe ejecutivo semanal entregado al cliente. Tres piezas que conviven en un loop de producto, datos y consultoría.
         </p>
@@ -2428,39 +2662,62 @@
             </span>
             <span class="arr">↗</span>
           </a>
-          <a class="btn" href="assets/informe-eventoplus-semana-19.pdf" target="_blank" rel="noopener">
-            <span class="l">
-              <span class="ico">03</span>
-              <span>
-                Informe ejecutivo · semana 19
-                <span class="sub">Entregable consultivo · PDF · 3-10 may 2026</span>
-              </span>
-            </span>
-            <span class="arr">↗</span>
-          </a>
         </div>
       </div>
 
-      <div class="right shot-slot" data-shot-slot="eventoplus-dashboard">
-        <div class="chart-frame">
-          <div class="ft">
-            <span>Eventoplus · semana 19 / 2026</span>
-            <span>+14% vs sem. anterior</span>
+      <div class="right shot-slot kpi-table-card" data-shot-slot="eventoplus-dashboard" id="kpiCard">
+        <div class="kpi-table-head">
+          <div>
+            <div class="kt-label">Semana 19 · 3-10 mayo 2026</div>
+            <h3 class="kt-title">KPIs del informe semanal</h3>
           </div>
-          <h3>Sesiones del chatbot</h3>
-          <div class="sub">finder.eventoplus.com / chat</div>
-          <div class="bars" id="bars"></div>
-          <div class="ft" style="margin-top:18px;">
-            <span>Demanda geográfica · semana 19</span>
-            <span>1 solicitud cerrada</span>
+          <span class="kt-wow">+14% WoW</span>
+        </div>
+
+        <div class="kpi-table">
+          <div class="kpi-row-h">
+            <span>Indicador</span>
+            <span>Esta sem.</span>
+            <span>Anterior</span>
+            <span>Variación</span>
           </div>
-          <div class="geo">
-            <div class="geo-row"><span class="nm">Madrid</span><span class="pct">44%</span><span class="bar2"><i data-width="88%"></i></span></div>
-            <div class="geo-row"><span class="nm">Barcelona</span><span class="pct">16%</span><span class="bar2"><i data-width="36%"></i></span></div>
-            <div class="geo-row"><span class="nm">Andalucía</span><span class="pct">13%</span><span class="bar2"><i data-width="30%"></i></span></div>
-            <div class="geo-row"><span class="nm">Valencia · Alicante</span><span class="pct">9%</span><span class="bar2"><i data-width="22%"></i></span></div>
+
+          <a class="kpi-row-i" href="https://naranja-bot.onrender.com" target="_blank" rel="noopener" data-kpi="sesiones">
+            <span class="kn">Sesiones totales</span>
+            <span class="kw">32</span>
+            <span class="kp">28</span>
+            <span class="kv positive">+14%</span>
+          </a>
+          <a class="kpi-row-i" href="https://naranja-bot.onrender.com" target="_blank" rel="noopener" data-kpi="mensajes">
+            <span class="kn">Mensajes totales</span>
+            <span class="kw">116</span>
+            <span class="kp">104</span>
+            <span class="kv positive">+12%</span>
+          </a>
+          <div class="kpi-row-i" data-kpi="media">
+            <span class="kn">Mensajes / sesión</span>
+            <span class="kw">3,6</span>
+            <span class="kp">3,7</span>
+            <span class="kv stable">≈ Estable</span>
+          </div>
+          <div class="kpi-row-i hot" data-kpi="leads">
+            <span class="kn">Solicitudes cerradas</span>
+            <span class="kw">1</span>
+            <span class="kp">0</span>
+            <span class="kv positive">+1</span>
+          </div>
+          <div class="kpi-row-i" data-kpi="errores">
+            <span class="kn">Errores técnicos (n8n)</span>
+            <span class="kw">1<span class="ks">status 500</span></span>
+            <span class="kp">3<span class="ks">error 524</span></span>
+            <span class="kv positive">−67%</span>
           </div>
         </div>
+
+        <div class="kpi-table-foot">
+          <span class="kt-geo">Demanda · <b>Madrid 44%</b> · Barcelona 16% · Andalucía 13% · Valencia 9%</span>
+        </div>
+
         <img class="shot-img" alt="Eventoplus dashboard" />
         <div class="shot-edit" role="button" tabindex="0" data-upload-shot="eventoplus-dashboard">
           <span class="plus">+</span>
@@ -3285,6 +3542,28 @@
         });
       }, { threshold: 0.35 });
       geoObs.observe(geoContainer);
+    }
+
+    // ---- KPI card · cursor-following radial glow ----
+    const kpiCard = document.getElementById('kpiCard');
+    if (kpiCard && matchMedia('(pointer: fine)').matches) {
+      let kpiRaf = null;
+      let kpiX = 50, kpiY = 50;
+      function applyKpi() {
+        kpiCard.style.setProperty('--mx', kpiX + '%');
+        kpiCard.style.setProperty('--my', kpiY + '%');
+        kpiRaf = null;
+      }
+      kpiCard.addEventListener('mousemove', (e) => {
+        const r = kpiCard.getBoundingClientRect();
+        kpiX = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+        kpiY = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+        if (!kpiRaf) kpiRaf = requestAnimationFrame(applyKpi);
+      }, { passive: true });
+      kpiCard.addEventListener('mouseleave', () => {
+        kpiCard.style.setProperty('--mx', '50%');
+        kpiCard.style.setProperty('--my', '50%');
+      });
     }
 
     // ---- Mouse-following spotlight ----
