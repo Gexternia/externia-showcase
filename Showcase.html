@@ -745,68 +745,22 @@
     display: flex; align-items: center; justify-content: center;
   }
   .thumb.clinique .letter {
-    width: 65%; aspect-ratio: 4/5;
+    width: 64%; aspect-ratio: 760/990;
     background: linear-gradient(180deg, #fbfaf6 0%, #f2ede3 100%);
     border-radius: 6px;
-    padding: 18px 20px 14px;
     box-shadow:
       0 30px 60px rgba(0,0,0,.55),
       0 0 0 1px rgba(0,0,0,.22),
       inset 0 1px 0 rgba(255,255,255,0.6);
     transform: rotate(-2.5deg);
     position: relative;
-    color: #1a1316;
-    font-family: "Work Sans", sans-serif;
-    display: flex; flex-direction: column;
     overflow: hidden;
   }
-  .thumb.clinique .letter-brand {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 14px; font-weight: 700;
-    letter-spacing: 0.08em;
-    text-align: center;
-    color: #0a0a0b;
-  }
-  .thumb.clinique .letter-sub {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 8.5px;
-    font-style: italic;
-    text-align: center;
-    color: #555;
-    margin-top: 2px;
-  }
-  .thumb.clinique .letter-rule {
-    width: 24px; height: 1px;
-    background: #888;
-    margin: 6px auto;
-  }
-  .thumb.clinique .letter-to {
-    font-size: 7px;
-    color: #2a2226;
-    margin: 4px 0 2px;
-    font-weight: 500;
-  }
-  .thumb.clinique .letter-body {
-    font-size: 5.6px;
-    line-height: 1.4;
-    color: #44383d;
-    margin: 0;
-    text-align: justify;
-    flex: 1;
-    overflow: hidden;
-  }
-  .thumb.clinique .letter-sign {
-    font-family: "Brush Script MT", "Lucida Handwriting", cursive;
-    font-size: 9px;
-    text-align: right;
-    color: #2a2226;
-    margin: 4px 0 2px;
-  }
-  .thumb.clinique .letter-social {
-    font-size: 5.5px;
-    text-align: center;
-    color: #777;
-    letter-spacing: 0.04em;
+  /* Real Clinique letter image as background of the rotated paper mock */
+  .thumb.clinique .letter-photo {
+    background-image: url("assets/clinique-letter.png");
+    background-size: cover;
+    background-position: center top;
   }
   .thumb.clinique .letter .ll {
     display: block; height: 4px; border-radius: 2px;
@@ -1287,6 +1241,74 @@
     0%   { transform: translate(0,0) scale(.95); }
     100% { transform: translate(60px, -90px) scale(1.1); }
   }
+
+  /* Side dot navigator — jump-to-section without breaking the design */
+  .sidenav {
+    position: fixed;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column;
+    gap: 10px;
+    z-index: 60;
+    padding: 12px 6px;
+    opacity: 0;
+    transition: opacity .45s ease;
+    pointer-events: none;
+    background: rgba(10,10,11,0.42);
+    border-radius: 9999px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(229,226,227,0.06);
+  }
+  body.sidenav-on .sidenav { opacity: 1; pointer-events: auto; }
+
+  .sn-dot {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .sn-bullet {
+    display: block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(229,226,227,0.4);
+    transition: background .25s ease, transform .25s ease, box-shadow .25s ease, width .25s ease, height .25s ease;
+  }
+  .sn-dot:hover .sn-bullet { background: var(--magenta); transform: scale(1.4); }
+  .sn-dot.active .sn-bullet {
+    background: linear-gradient(95deg, #f1c100 0%, #ff8a3d 38%, #ff3a8a 78%, #c0288f 100%);
+    width: 11px; height: 11px;
+    box-shadow: 0 0 14px rgba(255,58,138,0.65);
+  }
+  .sn-label {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: rgba(20,20,22,0.92);
+    border: 1px solid var(--outline-2);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-surface);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .25s ease;
+    backdrop-filter: blur(10px);
+  }
+  .sn-dot:hover .sn-label,
+  .sn-dot:focus .sn-label {
+    opacity: 1;
+    transform: translateY(-50%) translateX(-10px);
+  }
+  @media (max-width: 900px) { .sidenav { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .sidenav { transition: none !important; } }
 
   /* Mouse-following spotlight */
   .mouse-spot {
@@ -2109,61 +2131,107 @@
     position: relative;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 16px;
+    gap: 18px;
     margin-bottom: 30px;
+    --progress: 0%;
   }
+  /* Connecting line that fills in as phases activate */
   .meth-line {
     position: absolute;
     top: 30px; left: 22px; right: 22px;
     height: 2px;
-    background: linear-gradient(90deg, var(--magenta), var(--orange), var(--yellow));
-    opacity: 0.30;
+    background: rgba(229,226,227,0.08);
     z-index: 0;
+    overflow: hidden;
+    border-radius: 2px;
   }
+  .meth-line::after {
+    content: "";
+    position: absolute; top: 0; left: 0; bottom: 0;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, #f1c100 0%, #ff8a3d 38%, #ff3a8a 78%, #c0288f 100%);
+    box-shadow: 0 0 18px rgba(255,87,26,0.55);
+    transition: width 1.1s cubic-bezier(.2,.75,.2,1);
+  }
+  .meth-timeline { /* the timeline's --progress is set by JS */ }
+
   .meth-phase {
     position: relative;
-    padding: 22px 22px 24px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
+    padding: 24px 24px 26px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)),
+      rgba(10,10,11,0.4);
+    opacity: 0.34;
+    filter: saturate(0.6);
+    transition:
+      opacity .8s cubic-bezier(.2,.75,.2,1),
+      filter .8s ease,
+      border-color .5s ease,
+      box-shadow .8s ease,
+      transform .6s ease;
+    will-change: opacity, filter;
   }
+  .meth-phase.lit {
+    opacity: 1;
+    filter: saturate(1);
+    border-color: rgba(255,58,138,0.35);
+    box-shadow: 0 0 32px rgba(255,58,138,0.16);
+  }
+  .meth-phase.hot.lit,
+  .meth-phase.lit:hover {
+    border-color: rgba(255,58,138,0.55);
+    box-shadow: 0 0 36px rgba(255,58,138,0.24);
+  }
+
   .meth-phase .num-tag {
     position: absolute;
-    top: 16px; left: 22px;
-    width: 28px; height: 28px;
+    top: 16px; left: 24px;
+    width: 30px; height: 30px;
     border-radius: 50%;
     background: var(--surface-hi);
     border: 1px solid var(--outline-2);
     font-family: "JetBrains Mono", monospace;
-    font-size: 11px; font-weight: 500;
+    font-size: 11.5px; font-weight: 600;
     display: flex; align-items: center; justify-content: center;
     color: var(--on-surface-dim);
     z-index: 2;
+    transition: background .6s ease, color .6s ease, border-color .6s ease, box-shadow .6s ease, transform .6s ease;
   }
-  .meth-phase.hot {
-    border-color: rgba(255,58,138,0.55);
-    box-shadow: 0 0 28px rgba(255,58,138,0.18);
-  }
-  .meth-phase.hot .num-tag {
-    background: var(--grad); color: #1a0008;
+  .meth-phase.lit .num-tag {
+    background: linear-gradient(95deg, #f1c100 0%, #ff8a3d 38%, #ff3a8a 78%, #c0288f 100%);
+    color: #1a0008;
     border-color: transparent;
+    box-shadow: 0 0 22px rgba(255,58,138,0.55);
+    transform: scale(1.08);
   }
+
   .meth-phase .when {
     font-family: "JetBrains Mono", monospace;
     font-size: 11px;
     color: var(--on-surface-faint);
     letter-spacing: 0.1em;
-    margin: 40px 0 6px;
+    margin: 42px 0 6px;
     text-transform: uppercase;
   }
   .meth-phase .pname {
     font-family: "Space Grotesk", sans-serif;
-    font-size: 20px; font-weight: 600;
+    font-size: 22px; font-weight: 600;
     letter-spacing: -0.01em;
-    margin: 0 0 10px;
+    margin: 0 0 12px;
+    transition: color .5s ease;
   }
-  .meth-phase .pname .grad {
-    background: var(--grad);
-    -webkit-background-clip: text; background-clip: text;
+  .meth-phase.lit .pname {
+    background: linear-gradient(95deg, #f1c100 0%, #ff8a3d 38%, #ff3a8a 78%, #c0288f 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
+  }
+  /* If the phase already has .grad markup inside .pname, keep it consistent */
+  .meth-phase.lit .pname .grad {
+    background: none;
+    -webkit-text-fill-color: inherit;
+    color: inherit;
   }
   .meth-phase .pdesc {
     font-size: 13.5px;
@@ -2180,12 +2248,20 @@
     font-family: "JetBrains Mono", monospace;
     font-size: 11.5px;
     color: var(--on-surface-dim);
-    padding: 4px 0;
+    padding: 5px 0;
     letter-spacing: 0.02em;
+    transition: color .5s ease;
   }
   .meth-phase ul li::before {
     content: "› ";
     color: var(--magenta);
+  }
+  .meth-phase.lit ul li {
+    color: var(--on-surface);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .meth-phase { opacity: 1 !important; filter: saturate(1) !important; }
+    .meth-line::after { width: 100% !important; }
   }
 
   .meth-felt {
@@ -2325,6 +2401,29 @@
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
   }
+  /* Full-bleed 3D worlds video inside the R&D right panel */
+  .rd-video-wrap {
+    flex: 1;
+    margin: 14px -28px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+    border-top: 1px solid var(--outline);
+    border-bottom: 1px solid var(--outline);
+  }
+  .rd-video {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(1.1);
+  }
+  .rd-video-wrap::after {
+    /* subtle vignette */
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(10,10,11,0.4) 100%);
+    pointer-events: none;
+  }
   .rd-rings {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
@@ -2461,6 +2560,37 @@
       radial-gradient(ellipse at center, rgba(241,193,0,0.06), transparent 70%),
       linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012));
   }
+  a.blog-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+    transition: transform .35s cubic-bezier(.2,.75,.2,1), border-color .35s ease, box-shadow .35s ease;
+  }
+  a.blog-link:hover {
+    transform: translateY(-3px);
+    border-color: rgba(241,193,0,0.45);
+    box-shadow: 0 0 40px rgba(241,193,0,0.18);
+  }
+  .blog-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 22px;
+    padding: 10px 22px;
+    border-radius: 9999px;
+    border: 1px solid var(--outline-2);
+    background: rgba(255,255,255,0.04);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--on-surface);
+    transition: background .25s ease, border-color .25s ease, color .25s ease;
+  }
+  a.blog-link:hover .blog-cta {
+    background: var(--grad);
+    border-color: transparent;
+    color: #1a0008;
+  }
+  a.blog-link:hover .blog-cta .arr { color: #1a0008; }
   .blog-hero .blog-url {
     font-family: "JetBrains Mono", monospace;
     font-size: 13px;
@@ -2629,6 +2759,37 @@
 <div class="grain"></div>
 <div class="mouse-spot" id="mouseSpot" aria-hidden="true"></div>
 
+<nav class="sidenav" id="sidenav" aria-label="Saltar a sección">
+  <a class="sn-dot active" href="#cover" data-target="cover">
+    <span class="sn-label">Inicio</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-A" data-target="sec-A">
+    <span class="sn-label">Eventoplus</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-B" data-target="sec-B">
+    <span class="sn-label">Activaciones</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-C" data-target="sec-C">
+    <span class="sn-label">Turespaña</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-D" data-target="sec-D">
+    <span class="sn-label">Metodología</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-E" data-target="sec-E">
+    <span class="sn-label">I+D · 3D Worlds</span>
+    <span class="sn-bullet"></span>
+  </a>
+  <a class="sn-dot" href="#sec-F" data-target="sec-F">
+    <span class="sn-label">Blog · Contacto</span>
+    <span class="sn-bullet"></span>
+  </a>
+</nav>
+
 <section class="cover" id="cover" aria-label="Externia · Showcase intro">
   <div class="cover-bg" aria-hidden="true"></div>
   <div class="cover-grid" aria-hidden="true"></div>
@@ -2714,7 +2875,7 @@
   </section>
 
   <!-- SECTION A — Cliente recurrente -->
-  <section class="cat">
+  <section class="cat" id="sec-A">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">A / 01</span>
@@ -2896,7 +3057,7 @@
   </div>
 
   <!-- SECTION B — Activaciones -->
-  <section class="cat">
+  <section class="cat" id="sec-B">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">B / 02</span>
@@ -2908,7 +3069,7 @@
     <div class="grid-b">
 
       <a class="card tile" href="https://comic-ai-s1ca.onrender.com" target="_blank" rel="noopener">
-        <div class="thumb kpmg shot-slot has-image" data-shot-slot="kpmg">
+        <div class="thumb kpmg shot-slot" data-shot-slot="kpmg">
           <span class="corner-tag logo-slot" data-logo-slot="kpmg">
             <span class="dot"></span>
             <span class="text">Cliente · KPMG</span>
@@ -2919,7 +3080,7 @@
             <div class="panel hl">Panel 02</div>
             <div class="panel">Panel 03</div>
           </div>
-          <img class="shot-img" src="assets/comicgen-sample.png" alt="ComicGen · cómic generado para evento" style="object-position: center top;" />
+          <img class="shot-img" alt="ComicGen screenshot" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="kpmg">
             <span class="plus">+</span>
             <span class="lbl">Subir captura ComicGen</span>
@@ -2949,16 +3110,7 @@
             <span class="text">Cliente · Clinique</span>
             <img class="logo-img" alt="Clinique" />
           </span>
-          <div class="letter">
-            <div class="letter-brand">CLINIQUE</div>
-            <div class="letter-sub">Glow gracias a ti.</div>
-            <div class="letter-rule"></div>
-            <div class="letter-to">Querida Anamari</div>
-            <p class="letter-body">Gracias por ser la mejor madre. Quería darte las gracias de verdad por estar siempre ahí, pase lo que pase. Me da mucha tranquilidad saber que puedo contar contigo para cualquier cosa…</p>
-            <div class="letter-sign">Guillermo</div>
-            <div class="letter-rule"></div>
-            <div class="letter-social">⊙ @clinique_es &nbsp;·&nbsp; ♪ @clinique</div>
-          </div>
+          <div class="letter letter-photo"></div>
           <img class="shot-img" alt="Clinique cartas screenshot" />
           <div class="shot-edit" role="button" tabindex="0" data-upload-shot="clinique">
             <span class="plus">+</span>
@@ -3097,7 +3249,7 @@
   </section>
 
   <!-- SECTION C — Caso Turespaña -->
-  <section class="cat">
+  <section class="cat" id="sec-C">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">C / 03</span>
@@ -3188,7 +3340,7 @@
   </section>
 
   <!-- SECTION D — Metodología -->
-  <section class="cat">
+  <section class="cat" id="sec-D">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">D / 04</span>
@@ -3260,31 +3412,10 @@
         Las personas con criterio acumulado son las que <strong>más ganan con esto</strong>, no las que pierden. Su conocimiento es lo que entrena los agentes. Por primera vez su experiencia se vuelve replicable y consultable.
       </div>
     </article>
-
-    <div class="cat-head" style="margin-bottom: 22px; margin-top: 12px;">
-      <div class="cat-left">
-        <span class="cat-num">RULES / 03</span>
-        <h2 class="cat-title" style="font-size: 22px;">Tres reglas innegociables</h2>
-      </div>
-    </div>
-    <div class="meth-rules">
-      <article class="card meth-rule">
-        <div class="rnum">01</div>
-        <p>Empezamos por las tareas que el equipo <strong>odia hacer</strong>. Recuperan horas que nadie defendía.</p>
-      </article>
-      <article class="card meth-rule">
-        <div class="rnum">02</div>
-        <p>La IA <strong>nunca está en el camino crítico</strong> sin supervisión humana. Prepara o sugiere, la persona valida, el output va al cliente.</p>
-      </article>
-      <article class="card meth-rule">
-        <div class="rnum">03</div>
-        <p>No exigimos cambio cultural primero. Hacemos las herramientas <strong>tan útiles que se adoptan por demanda</strong>, no por imposición.</p>
-      </article>
-    </div>
   </section>
 
   <!-- SECTION E — I+D abierto -->
-  <section class="cat" style="margin-bottom: 40px;">
+  <section class="cat" id="sec-E" style="margin-bottom: 40px;">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">E / 05</span>
@@ -3331,16 +3462,13 @@
 
       <article class="card rd-right shot-slot" data-shot-slot="rd-3d">
         <div class="rd-viz-info">
-          <span class="l"><span class="dot"></span>scene · ballroom_v0</span>
+          <span class="l"><span class="dot"></span>scene · 3D world · render</span>
           <span>World Labs · World API</span>
         </div>
-        <div class="rd-viz-stage">
-          <div class="rd-rings">
-            <div class="ring r1"></div>
-            <div class="ring r2"></div>
-            <div class="ring r3"></div>
-          </div>
-          <div class="rd-sphere"></div>
+        <div class="rd-video-wrap">
+          <video class="rd-video" autoplay loop muted playsinline preload="auto" aria-hidden="true">
+            <source src="assets/3d-worlds.mp4" type="video/mp4" />
+          </video>
         </div>
         <div class="rd-meta">
           <div class="col">
@@ -3398,7 +3526,7 @@
   </section>
 
   <!-- SECTION F — Blog autónomo + finale -->
-  <section class="cat" style="margin-bottom: 40px;">
+  <section class="cat" id="sec-F" style="margin-bottom: 40px;">
     <div class="cat-head">
       <div class="cat-left">
         <span class="cat-num">F / 06</span>
@@ -3407,7 +3535,7 @@
       <span class="cat-meta">Sin intervención humana · en producción</span>
     </div>
 
-    <article class="card blog-hero">
+    <a class="card blog-hero blog-link" href="https://externia.ai/blog" target="_blank" rel="noopener">
       <div class="blog-url">externia.ai/blog</div>
       <h1 class="blog-h">
         El blog de Externia<br/>se <span class="grad">escribe solo</span>.
@@ -3416,32 +3544,20 @@
       <p class="blog-sub">
         Posts publicados sin intervención humana en la cadena editorial. Investigación, redacción, optimización SEO, formato, publicación. Agentes de Externia operando en producción desde hace meses.
       </p>
-    </article>
-
-    <div class="blog-grid">
-      <article class="card blog-cell">
-        <div class="num">— 01 / Pregunta</div>
-        <h4>¿Por qué importa esto?</h4>
-        <p>Porque enseña que no solo construimos para clientes. Operamos nuestra propia infraestructura editorial con la misma tecnología que vendemos.</p>
-      </article>
-      <article class="card blog-cell">
-        <div class="num">— 02 / Prueba</div>
-        <h4>El test es trivial.</h4>
-        <p>Si no funcionara, nuestro propio blog estaría vacío. Cada nuevo post es una demo silenciosa de que el sistema está vivo.</p>
-      </article>
-    </div>
+      <div class="blog-cta">Abrir el blog <span class="arr">↗</span></div>
+    </a>
 
     <article class="card blog-finale">
       <h3>
-        Has visto lo público.<br/>
-        Lo que no está aquí, lo construimos para el <span class="grad">siguiente cliente</span>.
+        Esto opera hoy.<br/>
+        Hablemos de <span class="grad">lo siguiente</span>.
       </h3>
       <div class="finale-actions">
-        <a class="btn primary" href="mailto:hola@externia.ai">
+        <a class="btn primary" href="mailto:g.prado@externia.ai">
           <span class="l">
             <span class="ico" style="background: rgba(26,0,8,.2); color: #1a0008;">✉</span>
             <span>
-              Contactar · hola@externia.ai
+              g.prado@externia.ai
               <span class="sub">Una conversación, no un formulario</span>
             </span>
           </span>
@@ -3465,14 +3581,13 @@
   <footer class="bot footer-slim">
     <div class="footer-brand">
       <img src="assets/externia-lockup.svg" alt="Externia" />
-      <span class="tag">Producto · Activaciones · I+D · pagado por clientes, no por inversores</span>
     </div>
     <div class="footer-links">
       <a href="https://externia.ai" target="_blank">externia.ai</a>
       <span class="sep">·</span>
       <a href="https://externia.ai/blog" target="_blank">Blog autónomo</a>
       <span class="sep">·</span>
-      <a href="mailto:hola@externia.ai">hola@externia.ai</a>
+      <a href="mailto:g.prado@externia.ai">g.prado@externia.ai</a>
     </div>
     <div class="copyline-slim">
       <span>Externia · Showcase v2026.05 · Madrid</span>
@@ -3666,6 +3781,28 @@
       geoObs.observe(geoContainer);
     }
 
+    // ---- Metodología · progressive phase illumination ----
+    const methTimeline = document.querySelector('.meth-timeline');
+    if (methTimeline) {
+      const methPhases = Array.from(methTimeline.querySelectorAll('.meth-phase'));
+      // Phase 1 lights up immediately (you are here / starting point)
+      if (methPhases[0]) {
+        methPhases[0].classList.add('lit');
+        methTimeline.style.setProperty('--progress', (1 / methPhases.length * 100) + '%');
+      }
+      const methObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting && e.intersectionRatio > 0.55) {
+            e.target.classList.add('lit');
+          }
+        });
+        const litCount = methTimeline.querySelectorAll('.meth-phase.lit').length;
+        const pct = Math.min(100, (litCount / methPhases.length) * 100);
+        methTimeline.style.setProperty('--progress', pct + '%');
+      }, { threshold: [0.55, 0.75] });
+      methPhases.forEach(p => methObs.observe(p));
+    }
+
     // ---- KPI card · cursor-following radial glow ----
     const kpiCard = document.getElementById('kpiCard');
     if (kpiCard && matchMedia('(pointer: fine)').matches) {
@@ -3686,6 +3823,38 @@
         kpiCard.style.setProperty('--mx', '50%');
         kpiCard.style.setProperty('--my', '50%');
       });
+    }
+
+    // ---- Side navigator: visibility + active-section tracking ----
+    const sidenav = document.getElementById('sidenav');
+    if (sidenav) {
+      const navIds = ['cover', 'sec-A', 'sec-B', 'sec-C', 'sec-D', 'sec-E', 'sec-F'];
+      const sectionEls = navIds.map(id => document.getElementById(id));
+      const dots = Array.from(sidenav.querySelectorAll('.sn-dot'));
+
+      let navRaf = null;
+      function syncNav() {
+        navRaf = null;
+        const y = window.scrollY;
+        const h = window.innerHeight;
+        // Show navigator only after the user has clearly scrolled past the cover
+        document.body.classList.toggle('sidenav-on', y > h * 0.55);
+        // Active section: the topmost whose top is above the 30% viewport line
+        const triggerLine = y + h * 0.30;
+        let activeIdx = 0;
+        sectionEls.forEach((el, i) => {
+          if (!el) return;
+          if (el.offsetTop <= triggerLine) activeIdx = i;
+        });
+        dots.forEach((d, i) => d.classList.toggle('active', i === activeIdx));
+      }
+      window.addEventListener('scroll', () => {
+        if (!navRaf) navRaf = requestAnimationFrame(syncNav);
+      }, { passive: true });
+      window.addEventListener('resize', () => {
+        if (!navRaf) navRaf = requestAnimationFrame(syncNav);
+      }, { passive: true });
+      syncNav();
     }
 
     // ---- Mouse-following spotlight ----
