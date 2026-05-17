@@ -1,0 +1,18 @@
+# Local Claude Code state
+.claude/
+
+# Design handoff bundles (referencia local, no se despliegan)
+design_extracted/
+design_extracted_2/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
