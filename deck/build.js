@@ -1,5 +1,5 @@
 // Externia · Showcase Deck (PPTX)
-// Generates a 10-slide commercial pitch deck mirroring the Showcase landing.
+// 11 slides, 4:3 (10 x 7.5"), dark Externia aesthetic, clickable links.
 
 const PptxGenJS = require("pptxgenjs");
 const path = require("path");
@@ -24,64 +24,70 @@ const C = {
   yellow:    "F1C100",
   rose:      "C0288F",
   green:     "6FE3A8",
+  greenBg:   "1A3A28",
+  greenBd:   "2B6A48",
 };
 
-// Fonts (PowerPoint will substitute if not installed — Calibri is universal fallback)
 const F = {
-  head: "Calibri",      // Headlines
-  body: "Calibri Light", // Body text
-  mono: "Consolas",     // Meta / monospace
+  head: "Calibri",
+  body: "Calibri Light",
+  mono: "Consolas",
 };
 
 const pptx = new PptxGenJS();
-pptx.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 inches (16:9)
+// 4:3 = 10 x 7.5 inches — more document-like, less "TV"
+pptx.defineLayout({ name: "DECK_43", width: 10, height: 7.5 });
+pptx.layout = "DECK_43";
 pptx.title = "Externia · Showcase 2026";
 pptx.author = "Externia";
 pptx.company = "Externia";
 pptx.subject = "Showcase comercial";
 
-const W = 13.333; // slide width
-const H = 7.5;    // slide height
+const W = 10;
+const H = 7.5;
+const TOTAL_SLIDES = 11;
 
-// === Reusable helpers ============================================
+// --- Helpers --------------------------------------------------
 function darkBg(slide) {
   slide.background = { color: C.bg };
 }
 function eyebrow(slide, text, opts = {}) {
-  const { x = 0.6, y = 0.45, color = C.magenta } = opts;
+  const { x = 0.5, y = 0.4, color = C.magenta } = opts;
   slide.addText("▲ " + text, {
     x, y, w: 8, h: 0.3,
-    fontFace: F.mono, fontSize: 11, bold: true,
+    fontFace: F.mono, fontSize: 10, bold: true,
     color, charSpacing: 4,
   });
 }
-function pageNum(slide, n, total = 10) {
-  slide.addText(`${String(n).padStart(2, "0")} / ${String(total).padStart(2, "0")}`, {
-    x: W - 1.4, y: H - 0.45, w: 1, h: 0.25,
-    fontFace: F.mono, fontSize: 9, color: C.faint, align: "right", charSpacing: 3,
+function pageNum(slide, n) {
+  slide.addText(`${String(n).padStart(2, "0")} / ${String(TOTAL_SLIDES).padStart(2, "0")}`, {
+    x: W - 1.3, y: H - 0.45, w: 1, h: 0.25,
+    fontFace: F.mono, fontSize: 8, color: C.faint, align: "right", charSpacing: 3,
   });
 }
-function brand(slide, opts = {}) {
-  const { x = W - 1.6, y = 0.4 } = opts;
+function brand(slide) {
   slide.addText("EXTERNIA", {
-    x, y, w: 1.2, h: 0.25,
-    fontFace: F.mono, fontSize: 10, bold: true, color: C.dim, charSpacing: 6, align: "right",
-  });
-}
-function gradAccent(slide, x, y, w = 0.6, h = 0.06) {
-  // Single magenta bar as the brand accent (PPTX gradient text isn't portable)
-  slide.addShape("rect", {
-    x, y, w, h,
-    fill: { color: C.magenta }, line: { type: "none" },
+    x: W - 1.6, y: 0.4, w: 1.2, h: 0.25,
+    fontFace: F.mono, fontSize: 9, bold: true, color: C.dim, charSpacing: 6, align: "right",
   });
 }
 function softCard(slide, x, y, w, h, opts = {}) {
   slide.addShape("roundRect", {
     x, y, w, h,
-    rectRadius: 0.15,
+    rectRadius: 0.12,
     fill: { color: C.void2 },
     line: { color: C.outline, width: 1 },
     ...opts,
+  });
+}
+// Adds a tiny "↗ link" line that's clickable
+function linkLine(slide, x, y, w, label, url, opts = {}) {
+  const { color = C.magenta, fontSize = 9, align = "left" } = opts;
+  slide.addText("↗  " + label, {
+    x, y, w, h: 0.28,
+    fontFace: F.mono, fontSize, color,
+    bold: true, charSpacing: 1, align, valign: "middle",
+    hyperlink: { url, tooltip: label },
   });
 }
 
@@ -92,40 +98,33 @@ function softCard(slide, x, y, w, h, opts = {}) {
   const s = pptx.addSlide();
   darkBg(s);
 
-  // Decorative ambient circles (replace light leaks)
-  s.addShape("ellipse", {
-    x: -2.5, y: -2, w: 6, h: 6,
-    fill: { color: C.magenta, transparency: 88 }, line: { type: "none" },
-  });
-  s.addShape("ellipse", {
-    x: W - 3, y: H - 3, w: 5, h: 5,
-    fill: { color: C.yellow, transparency: 92 }, line: { type: "none" },
-  });
+  // Ambient circles
+  s.addShape("ellipse", { x: -2, y: -1.5, w: 4.5, h: 4.5, fill: { color: C.magenta, transparency: 88 }, line: { type: "none" } });
+  s.addShape("ellipse", { x: W - 2.5, y: H - 2.5, w: 4, h: 4, fill: { color: C.yellow, transparency: 92 }, line: { type: "none" } });
 
-  // Icon
-  s.addImage({ path: A("externia-icon-512.png"), x: W/2 - 0.9, y: H/2 - 1.9, w: 1.8, h: 1.8 });
+  s.addImage({ path: A("externia-icon-512.png"), x: W/2 - 0.85, y: H/2 - 2.0, w: 1.7, h: 1.7 });
 
-  // Wordmark
   s.addText("externia", {
-    x: 0, y: H/2 + 0.1, w: W, h: 1.4,
-    fontFace: F.head, fontSize: 96, bold: true, color: C.magenta,
+    x: 0, y: H/2 + 0.0, w: W, h: 1.3,
+    fontFace: F.head, fontSize: 84, bold: true, color: C.magenta,
     align: "center", charSpacing: -2,
   });
 
-  // Subtitle
   s.addText("Showcase · 2026", {
-    x: 0, y: H/2 + 1.5, w: W, h: 0.4,
-    fontFace: F.mono, fontSize: 14, color: C.dim, align: "center", charSpacing: 8,
+    x: 0, y: H/2 + 1.3, w: W, h: 0.4,
+    fontFace: F.mono, fontSize: 12, color: C.dim, align: "center", charSpacing: 8,
   });
 
-  // Bottom-left tagline
-  s.addText("Producto  ·  Activaciones  ·  I+D", {
-    x: 0.6, y: H - 0.7, w: 6, h: 0.3,
-    fontFace: F.mono, fontSize: 11, color: C.faint, charSpacing: 4,
+  s.addText("Producto  ·  Activaciones  ·  Formaciones  ·  I+D", {
+    x: 0.5, y: H - 0.7, w: 6, h: 0.3,
+    fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 4,
   });
+
+  // Email clickable
   s.addText("g.prado@externia.ai", {
-    x: W - 4.6, y: H - 0.7, w: 4, h: 0.3,
-    fontFace: F.mono, fontSize: 11, color: C.faint, align: "right", charSpacing: 3,
+    x: W - 3.5, y: H - 0.7, w: 3, h: 0.3,
+    fontFace: F.mono, fontSize: 9, color: C.faint, align: "right", charSpacing: 3,
+    hyperlink: { url: "mailto:g.prado@externia.ai", tooltip: "Escríbenos" },
   });
 }
 
@@ -144,30 +143,29 @@ function softCard(slide, x, y, w, h, opts = {}) {
     { text: "Externia", options: { color: C.magenta, bold: true } },
     { text: ", ahora mismo", options: { color: C.text } },
   ], {
-    x: 0.6, y: 1.3, w: W - 1.2, h: 2.4,
-    fontFace: F.head, fontSize: 64, bold: true,
+    x: 0.5, y: 1.1, w: W - 1.0, h: 2.0,
+    fontFace: F.head, fontSize: 44, bold: true,
     align: "center", charSpacing: -1, paraSpaceAfter: 0,
   });
 
   s.addText(
-    "Producto en producción, activaciones para marcas y la investigación que define el próximo salto. Todo está vivo. Todo se puede tocar.",
+    "Producto en producción, activaciones para marcas, formaciones de IA y la investigación que define el próximo salto. Todo está vivo. Todo se puede tocar.",
     {
-      x: 2.5, y: 3.9, w: W - 5, h: 1,
-      fontFace: F.body, fontSize: 16, color: C.dim, align: "center",
+      x: 1.5, y: 3.4, w: W - 3, h: 1.0,
+      fontFace: F.body, fontSize: 13, color: C.dim, align: "center",
     }
   );
 
   // Stats strip
   const stats = [
-    { k: "8+", l: "demos públicas" },
-    { k: "10", l: "meses operando" },
+    { k: "8+",   l: "demos públicas" },
+    { k: "10",   l: "meses operando" },
     { k: "100%", l: "hecho por Externia" },
-    { k: "∞",   l: "blog autónomo" },
+    { k: "∞",    l: "blog autónomo" },
   ];
-  const colW = 2.4;
+  const colW = 1.9;
   const rowX = (W - colW * 4) / 2;
-  const rowY = 5.4;
-  // Top + bottom rules
+  const rowY = 5.0;
   s.addShape("line", { x: rowX, y: rowY, w: colW*4, h: 0, line: { color: C.outline2, width: 1 } });
   s.addShape("line", { x: rowX, y: rowY + 1.4, w: colW*4, h: 0, line: { color: C.outline2, width: 1 } });
   stats.forEach((st, i) => {
@@ -175,11 +173,11 @@ function softCard(slide, x, y, w, h, opts = {}) {
     if (i > 0) s.addShape("line", { x, y: rowY + 0.2, w: 0, h: 1, line: { color: C.outline2, width: 1 } });
     s.addText(st.k, {
       x, y: rowY + 0.18, w: colW, h: 0.7,
-      fontFace: F.head, fontSize: 40, bold: true, color: C.magenta, align: "center",
+      fontFace: F.head, fontSize: 36, bold: true, color: C.magenta, align: "center",
     });
     s.addText(st.l, {
-      x, y: rowY + 0.95, w: colW, h: 0.35,
-      fontFace: F.mono, fontSize: 10, color: C.faint, align: "center", charSpacing: 3,
+      x, y: rowY + 0.9, w: colW, h: 0.35,
+      fontFace: F.mono, fontSize: 9, color: C.faint, align: "center", charSpacing: 3,
     });
   });
 
@@ -187,7 +185,7 @@ function softCard(slide, x, y, w, h, opts = {}) {
 }
 
 // ============================================================
-// SLIDE 3 — EVENTOPLUS (cliente recurrente)
+// SLIDE 3 — EVENTOPLUS
 // ============================================================
 {
   const s = pptx.addSlide();
@@ -196,18 +194,18 @@ function softCard(slide, x, y, w, h, opts = {}) {
   eyebrow(s, "A · Cliente recurrente en producción");
 
   // Logos row
-  s.addImage({ path: A("eventoplus-logo.webp"), x: 0.6, y: 1.0, w: 0.7, h: 0.7 });
-  s.addText("×", { x: 1.45, y: 1.0, w: 0.4, h: 0.7, fontFace: F.body, fontSize: 28, color: C.faint, align: "center", valign: "middle" });
-  s.addImage({ path: A("finderia-logo.webp"), x: 1.85, y: 1.15, w: 2.0, h: 0.4 });
+  s.addImage({ path: A("eventoplus-logo.webp"), x: 0.5, y: 0.85, w: 0.6, h: 0.6 });
+  s.addText("×", { x: 1.18, y: 0.85, w: 0.3, h: 0.6, fontFace: F.body, fontSize: 22, color: C.faint, align: "center", valign: "middle" });
+  s.addImage({ path: A("finderia-logo.webp"), x: 1.55, y: 0.97, w: 1.6, h: 0.32 });
 
   // Live chip
   s.addShape("roundRect", {
-    x: 4.1, y: 1.18, w: 3.3, h: 0.36, rectRadius: 0.2,
-    fill: { color: "1A3A28" }, line: { color: "2B6A48", width: 1 },
+    x: 3.4, y: 1.0, w: 2.8, h: 0.3, rectRadius: 0.15,
+    fill: { color: C.greenBg }, line: { color: C.greenBd, width: 1 },
   });
   s.addText("● Live · Cliente activo desde feb 2026", {
-    x: 4.1, y: 1.18, w: 3.3, h: 0.36,
-    fontFace: F.mono, fontSize: 10, color: C.green, align: "center", valign: "middle", charSpacing: 2, bold: true,
+    x: 3.4, y: 1.0, w: 2.8, h: 0.3,
+    fontFace: F.mono, fontSize: 9, color: C.green, align: "center", valign: "middle", charSpacing: 1, bold: true,
   });
 
   // Title
@@ -215,102 +213,76 @@ function softCard(slide, x, y, w, h, opts = {}) {
     { text: "El stack conversacional\nde ", options: { color: C.text } },
     { text: "Eventoplus", options: { color: C.magenta, bold: true } },
   ], {
-    x: 0.6, y: 1.9, w: W/2 + 0.4, h: 1.7,
-    fontFace: F.head, fontSize: 38, bold: true, charSpacing: -1,
+    x: 0.5, y: 1.6, w: W - 1.0, h: 1.4,
+    fontFace: F.head, fontSize: 32, bold: true, charSpacing: -1,
   });
 
   // Description
   s.addText(
     "Chatbot de búsqueda + dashboard analítico + informe ejecutivo semanal. Tres piezas que conviven en un loop de producto, datos y consultoría — no es software entregado, es un servicio recurrente que evoluciona cada semana.",
     {
-      x: 0.6, y: 3.6, w: W/2 + 0.4, h: 1.5,
-      fontFace: F.body, fontSize: 14, color: C.dim, paraSpaceAfter: 6,
+      x: 0.5, y: 3.05, w: W - 1.0, h: 0.85,
+      fontFace: F.body, fontSize: 12, color: C.dim,
     }
   );
 
-  // Services list
+  // 3 KPI cards
+  const kpis = [
+    { k: "32",   l: "sesiones · sem 19" },
+    { k: "116",  l: "mensajes procesados" },
+    { k: "+14%", l: "vs sem. anterior" },
+  ];
+  const kY = 4.0;
+  const kpW = 2.95;
+  const kpStart = 0.5;
+  kpis.forEach((kp, i) => {
+    const x = kpStart + i * (kpW + 0.05);
+    softCard(s, x, kY, kpW, 1.0);
+    s.addText(kp.k, {
+      x: x + 0.2, y: kY + 0.15, w: kpW - 0.4, h: 0.45,
+      fontFace: F.head, fontSize: 28, bold: true, color: C.magenta,
+    });
+    s.addText(kp.l, {
+      x: x + 0.2, y: kY + 0.65, w: kpW - 0.4, h: 0.3,
+      fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 3,
+    });
+  });
+
+  // Service buttons (clickable)
   const services = [
-    { code: "01", name: "Chatbot FinderAI", url: "naranja-bot.onrender.com" },
-    { code: "02", name: "Dashboard de estadísticas", url: "admin-frontend-b33o.onrender.com" },
-    { code: "03", name: "Informe ejecutivo · cada lunes", url: "PDF · entregable consultivo" },
+    { code: "01", name: "Chatbot FinderAI",          url: "https://naranja-bot.onrender.com",          host: "naranja-bot.onrender.com" },
+    { code: "02", name: "Dashboard de estadísticas", url: "https://admin-frontend-b33o.onrender.com",  host: "admin-frontend-b33o.onrender.com" },
   ];
   services.forEach((srv, i) => {
-    const y = 5.3 + i * 0.55;
+    const y = 5.2 + i * 0.55;
+    const sx = 0.5;
+    const sw = W - 1.0;
     s.addShape("roundRect", {
-      x: 0.6, y, w: W/2 + 0.2, h: 0.45, rectRadius: 0.08,
-      fill: { color: C.surfaceHi }, line: { color: C.outline2, width: 1 },
+      x: sx, y, w: sw, h: 0.45, rectRadius: 0.08,
+      fill: { color: i === 0 ? C.magenta : C.surfaceHi },
+      line: { color: i === 0 ? C.magenta : C.outline2, width: 1 },
+      hyperlink: { url: srv.url, tooltip: srv.host },
     });
     s.addText(srv.code, {
-      x: 0.78, y, w: 0.45, h: 0.45,
-      fontFace: F.mono, fontSize: 10, color: C.magenta, valign: "middle", bold: true, charSpacing: 2,
+      x: sx + 0.18, y, w: 0.4, h: 0.45,
+      fontFace: F.mono, fontSize: 10, color: i === 0 ? "1A0008" : C.magenta, valign: "middle", bold: true, charSpacing: 2,
     });
     s.addText(srv.name, {
-      x: 1.3, y, w: 4.5, h: 0.45,
-      fontFace: F.head, fontSize: 12, color: C.text, valign: "middle", bold: true,
+      x: sx + 0.7, y, w: 4.5, h: 0.45,
+      fontFace: F.head, fontSize: 12, color: i === 0 ? "1A0008" : C.text, valign: "middle", bold: true,
+      hyperlink: { url: srv.url, tooltip: srv.host },
     });
-    s.addText(srv.url, {
-      x: 1.3, y, w: 5, h: 0.45,
-      fontFace: F.mono, fontSize: 9, color: C.faint, valign: "middle", align: "right", charSpacing: 1,
+    s.addText("↗ " + srv.host, {
+      x: sx + sw - 4.0, y, w: 3.8, h: 0.45,
+      fontFace: F.mono, fontSize: 9, color: i === 0 ? "1A0008" : C.faint, valign: "middle", align: "right", charSpacing: 1,
+      hyperlink: { url: srv.url, tooltip: srv.host },
     });
   });
 
-  // Right side: KPI panel
-  const px = W/2 + 1.4;
-  const py = 1.9;
-  const pw = W - px - 0.6;
-  const ph = H - py - 0.9;
-  softCard(s, px, py, pw, ph);
-
-  s.addText("SEMANA 19  ·  3 - 10 MAYO 2026", {
-    x: px + 0.3, y: py + 0.2, w: pw - 0.6, h: 0.3,
-    fontFace: F.mono, fontSize: 10, color: C.faint, charSpacing: 3,
-  });
-  s.addShape("roundRect", {
-    x: px + pw - 1.4, y: py + 0.2, w: 1.1, h: 0.3, rectRadius: 0.15,
-    fill: { color: "1A3A28" }, line: { color: "2B6A48", width: 1 },
-  });
-  s.addText("+14% WoW", {
-    x: px + pw - 1.4, y: py + 0.2, w: 1.1, h: 0.3,
-    fontFace: F.mono, fontSize: 10, color: C.green, align: "center", valign: "middle", bold: true, charSpacing: 1,
-  });
-
-  // KPI rows
-  const rows = [
-    { name: "Sesiones totales",    a: "32",  b: "28",   v: "+14%",     hot: false },
-    { name: "Mensajes totales",    a: "116", b: "104",  v: "+12%",     hot: false },
-    { name: "Mensajes / sesión",   a: "3,6", b: "3,7",  v: "≈ Estable", hot: false },
-    { name: "Solicitudes cerradas",a: "1",   b: "0",    v: "+1",       hot: true  },
-    { name: "Errores n8n",         a: "1",   b: "3",    v: "−67%",     hot: false },
-  ];
-  const rowH = 0.65;
-  const tableY = py + 0.7;
-  rows.forEach((r, i) => {
-    const ry = tableY + i * (rowH + 0.05);
-    s.addShape("roundRect", {
-      x: px + 0.25, y: ry, w: pw - 0.5, h: rowH, rectRadius: 0.08,
-      fill: { color: r.hot ? "2A1614" : "151415" },
-      line: { color: r.hot ? "884226" : C.outline, width: 1 },
-    });
-    s.addText(r.name, {
-      x: px + 0.4, y: ry, w: 2.2, h: rowH,
-      fontFace: F.head, fontSize: 12, color: C.text, valign: "middle", bold: true,
-    });
-    s.addText(r.a, {
-      x: px + 2.6, y: ry, w: 1, h: rowH,
-      fontFace: F.head, fontSize: 18, color: C.magenta, valign: "middle", align: "center", bold: true,
-    });
-    s.addText(r.b, {
-      x: px + 3.6, y: ry, w: 1, h: rowH,
-      fontFace: F.mono, fontSize: 12, color: C.faint, valign: "middle", align: "center",
-    });
-    s.addShape("roundRect", {
-      x: px + 4.7, y: ry + 0.18, w: pw - 5.0, h: rowH - 0.36, rectRadius: 0.15,
-      fill: { color: "1A3A28" }, line: { color: "2B6A48", width: 1 },
-    });
-    s.addText(r.v, {
-      x: px + 4.7, y: ry + 0.18, w: pw - 5.0, h: rowH - 0.36,
-      fontFace: F.mono, fontSize: 10, color: C.green, valign: "middle", align: "center", bold: true,
-    });
+  // Footer note
+  s.addText("Demanda · Madrid 44%  ·  Andalucía 13%  ·  Barcelona 16%  ·  Valencia · Alicante 9%  ·  1 lead cerrado en Valencia", {
+    x: 0.5, y: 6.45, w: W - 1.0, h: 0.3,
+    fontFace: F.mono, fontSize: 9, color: C.faint, align: "center", charSpacing: 2,
   });
 
   pageNum(s, 3);
@@ -325,23 +297,20 @@ function softCard(slide, x, y, w, h, opts = {}) {
   brand(s);
   eyebrow(s, "A · El entregable que cierra el valor", { color: C.yellow });
 
-  // Title
   s.addText("Informe Ejecutivo Semanal", {
-    x: 0.6, y: 1.0, w: W - 1.2, h: 0.9,
-    fontFace: F.head, fontSize: 44, bold: true, color: C.text, charSpacing: -1,
+    x: 0.5, y: 0.85, w: W - 1.0, h: 0.7,
+    fontFace: F.head, fontSize: 36, bold: true, color: C.text, charSpacing: -1,
   });
   s.addText("PDF · 4 páginas · entregado cada lunes a Eventoplus", {
-    x: 0.6, y: 1.95, w: W - 1.2, h: 0.35,
-    fontFace: F.mono, fontSize: 12, color: C.yellow, charSpacing: 3,
+    x: 0.5, y: 1.55, w: W - 1.0, h: 0.3,
+    fontFace: F.mono, fontSize: 11, color: C.yellow, charSpacing: 3,
   });
 
-  // Lead
   s.addText("Cada lunes, el equipo de Eventoplus recibe un análisis ejecutivo entregable con:", {
-    x: 0.6, y: 2.6, w: W - 1.2, h: 0.4,
-    fontFace: F.body, fontSize: 15, color: C.dim,
+    x: 0.5, y: 2.2, w: W - 1.0, h: 0.4,
+    fontFace: F.body, fontSize: 13, color: C.dim,
   });
 
-  // Bullets (2 columns)
   const bullets = [
     "Síntesis ejecutiva + KPIs vs semana anterior",
     "Demanda geográfica por regiones",
@@ -353,110 +322,143 @@ function softCard(slide, x, y, w, h, opts = {}) {
   bullets.forEach((b, i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
-    const x = 0.6 + col * 5.8;
-    const y = 3.2 + row * 0.55;
+    const x = 0.5 + col * 4.55;
+    const y = 2.8 + row * 0.55;
     s.addText("▸", {
-      x, y, w: 0.3, h: 0.45,
-      fontFace: F.head, fontSize: 16, color: C.yellow, bold: true, valign: "middle",
+      x, y, w: 0.25, h: 0.45,
+      fontFace: F.head, fontSize: 14, color: C.yellow, bold: true, valign: "middle",
     });
     s.addText(b, {
-      x: x + 0.3, y, w: 5.3, h: 0.45,
-      fontFace: F.body, fontSize: 14, color: C.text, valign: "middle",
+      x: x + 0.25, y, w: 4.2, h: 0.45,
+      fontFace: F.body, fontSize: 12, color: C.text, valign: "middle",
     });
   });
 
-  // Closer (italic)
-  s.addShape("line", { x: 0.6, y: 5.6, w: W - 1.2, h: 0, line: { color: C.outline2, width: 1, dashType: "dash" } });
+  s.addShape("line", { x: 0.5, y: 4.85, w: W - 1.0, h: 0, line: { color: C.outline2, width: 1, dashType: "dash" } });
   s.addText([
     { text: "Es la diferencia entre vender un chatbot y vender ", options: { color: C.text, italic: true } },
     { text: "inteligencia operativa continua", options: { color: C.magenta, italic: false, bold: true } },
-    { text: ".", options: { color: C.text, italic: true } },
   ], {
-    x: 0.6, y: 5.85, w: W - 1.2, h: 0.9,
-    fontFace: F.head, fontSize: 22, italic: true,
+    x: 0.5, y: 5.1, w: W - 1.0, h: 0.9,
+    fontFace: F.head, fontSize: 18, italic: true,
+  });
+
+  // PDF link
+  s.addShape("roundRect", {
+    x: W/2 - 2.4, y: 6.3, w: 4.8, h: 0.55, rectRadius: 0.1,
+    fill: { color: C.surfaceHi }, line: { color: C.outline2, width: 1 },
+    hyperlink: { url: "https://externia-showcase.onrender.com/assets/informe-eventoplus-semana-19.pdf", tooltip: "Ver muestra del informe" },
+  });
+  s.addText("↗  Ver muestra · Informe Ejecutivo · semana 19 (PDF)", {
+    x: W/2 - 2.4, y: 6.3, w: 4.8, h: 0.55,
+    fontFace: F.head, fontSize: 12, color: C.text, bold: true, align: "center", valign: "middle",
+    hyperlink: { url: "https://externia-showcase.onrender.com/assets/informe-eventoplus-semana-19.pdf", tooltip: "Ver muestra del informe" },
   });
 
   pageNum(s, 4);
 }
 
 // ============================================================
-// SLIDE 5 — ACTIVACIONES (grid)
+// SLIDE 5 — TIPOS DE TRABAJO  (NEW!)
 // ============================================================
 {
   const s = pptx.addSlide();
   darkBg(s);
   brand(s);
-  eyebrow(s, "B · Activaciones para marcas");
+  eyebrow(s, "Tipos de trabajo que hacemos");
 
   s.addText([
-    { text: "Producto creado para marcas finales, ", options: { color: C.text } },
-    { text: "en vivo", options: { color: C.magenta, bold: true } },
+    { text: "Cuatro formatos, ", options: { color: C.text } },
+    { text: "una misma metodología", options: { color: C.magenta, bold: true } },
   ], {
-    x: 0.6, y: 0.95, w: W - 1.2, h: 0.85,
-    fontFace: F.head, fontSize: 32, bold: true, charSpacing: -1,
+    x: 0.5, y: 0.85, w: W - 1.0, h: 0.8,
+    fontFace: F.head, fontSize: 30, bold: true, charSpacing: -1,
+  });
+  s.addText("Lo que producimos para cada cliente, según lo que necesita.", {
+    x: 0.5, y: 1.7, w: W - 1.0, h: 0.35,
+    fontFace: F.body, fontSize: 12, color: C.dim,
   });
 
-  // 5 tiles: 3 top + 2 bottom (centered)
-  const tiles = [
-    { client: "KPMG",         title: "ComicGen",                  blurb: "Cómic generado con IA en directo para Encuentro Alumni — los asistentes son protagonistas.", url: "comic-ai-s1ca.onrender.com",   image: A("comicgen-kpmg.png") },
-    { client: "Clinique · INHOUSE", title: "Cartas personalizadas",  blurb: "Generador de cartas de marca con narrativa coherente, listas para imprimir y entregar.",       url: "clinique-bium.onrender.com",  image: A("clinique-letter.png") },
-    { client: "ING · Taller IA",    title: "SmartBrush + caricaturas", blurb: "Suite visual con IA: caricaturización en vivo, edición selectiva por pincel, retratos.",     url: "taller-ia-ing.onrender.com",  image: A("smartbrush-caricature.png") },
-    { client: "Talento Joven",      title: "Retro Game",              blurb: "Videojuego retro generado para evento corporativo de jóvenes talento. Sin instalación.",     url: "videogame-witg.onrender.com", image: null },
-    { client: "Externia · Interno", title: "DeckCraft",               blurb: "Generador de presentaciones desde brief + sistema de diseño en Markdown. Producción 10×.",   url: "deckcraft-3u04.onrender.com", image: A("deckcraft-sample.png") },
+  // 2x2 grid of categories
+  const types = [
+    {
+      tag: "01 · ACTIVACIÓN EXPERIENCIAL",
+      title: "Activaciones de marca en evento",
+      desc: "Producto generativo en vivo para asistentes de un evento corporativo. Se llevan algo personalizado, gancho real, retención alta. La marca queda asociada a la experiencia.",
+      audience: "Para el asistente final",
+      examples: "KPMG · Clinique · Talento Joven",
+      color: C.magenta,
+    },
+    {
+      tag: "02 · FORMACIÓN / TALLER IA",
+      title: "Talleres prácticos de IA",
+      desc: "Sesiones donde el equipo del cliente trabaja con herramientas reales: caricaturas, edición selectiva, generación visual. Aprenden usando, no escuchando. Salen con criterio.",
+      audience: "Para el equipo del cliente",
+      examples: "Taller IA · ING",
+      color: C.orangeLt,
+    },
+    {
+      tag: "03 · PRODUCTO RECURRENTE",
+      title: "Servicio operando todos los días",
+      desc: "Bot conversacional, dashboard analítico e informe consultivo semanal. No es entrega puntual: es un sistema que vive con el cliente y evoluciona con su producto cada semana.",
+      audience: "Para la operación del cliente",
+      examples: "Eventoplus · FinderAI",
+      color: C.yellow,
+    },
+    {
+      tag: "04 · CONSULTORÍA CON AGENTES",
+      title: "Sistemas de agentes IA",
+      desc: "Agentes entrenados con el histórico del cliente para acelerar concursos, propuestas, decks, investigación. La inteligencia interna del equipo se vuelve sistema replicable.",
+      audience: "Para los equipos creativos y comerciales",
+      examples: "Turespaña · DeckCraft · Externia interno",
+      color: C.rose,
+    },
   ];
 
-  const tileW = 4.0;
-  const tileH = 2.4;
-  const gap = 0.2;
-  const startX = (W - (tileW * 3 + gap * 2)) / 2;
-  const topY = 2.05;
-  const bottomY = topY + tileH + gap;
-  const bottomStartX = (W - (tileW * 2 + gap)) / 2;
+  const cardW = 4.45;
+  const cardH = 2.45;
+  const gap = 0.1;
+  const gridX = 0.5;
+  const gridY = 2.2;
 
-  tiles.forEach((t, i) => {
-    const isTop = i < 3;
-    const x = isTop ? startX + i * (tileW + gap) : bottomStartX + (i - 3) * (tileW + gap);
-    const y = isTop ? topY : bottomY;
-    // Card
-    softCard(s, x, y, tileW, tileH);
-    // Thumb area (top 55%)
-    const thumbH = tileH * 0.55;
-    s.addShape("roundRect", {
-      x: x + 0.08, y: y + 0.08, w: tileW - 0.16, h: thumbH - 0.08,
-      rectRadius: 0.08,
-      fill: { color: "0f0e10" }, line: { color: C.outline, width: 1 },
-    });
-    if (t.image) {
-      s.addImage({ path: t.image, x: x + 0.1, y: y + 0.1, w: tileW - 0.2, h: thumbH - 0.12, sizing: { type: "cover", w: tileW - 0.2, h: thumbH - 0.12 } });
-    } else {
-      // Retro Game placeholder — pixel mock
-      const pxColors = [C.yellow, C.magenta, C.yellow, C.orange, C.magenta, C.yellow];
-      pxColors.forEach((col, pi) => {
-        s.addShape("rect", {
-          x: x + 0.7 + pi * 0.4, y: y + 0.6, w: 0.22, h: 0.22,
-          fill: { color: col }, line: { type: "none" },
-        });
-      });
-    }
-    // Client tag (corner overlay)
-    s.addText("● " + t.client, {
-      x: x + 0.2, y: y + 0.18, w: tileW - 0.4, h: 0.25,
-      fontFace: F.mono, fontSize: 8, color: C.text, charSpacing: 2, bold: true,
+  types.forEach((t, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const x = gridX + col * (cardW + gap);
+    const y = gridY + row * (cardH + gap);
+
+    softCard(s, x, y, cardW, cardH, { line: { color: t.color, width: 1 } });
+
+    // Top accent bar
+    s.addShape("rect", { x: x + 0.15, y: y + 0.15, w: 0.4, h: 0.04, fill: { color: t.color }, line: { type: "none" } });
+    // Tag
+    s.addText(t.tag, {
+      x: x + 0.15, y: y + 0.22, w: cardW - 0.3, h: 0.3,
+      fontFace: F.mono, fontSize: 9, color: t.color, charSpacing: 3, bold: true,
     });
     // Title
     s.addText(t.title, {
-      x: x + 0.2, y: y + thumbH + 0.05, w: tileW - 0.4, h: 0.35,
-      fontFace: F.head, fontSize: 16, bold: true, color: C.text, charSpacing: -0.5,
+      x: x + 0.15, y: y + 0.55, w: cardW - 0.3, h: 0.5,
+      fontFace: F.head, fontSize: 17, bold: true, color: C.text, charSpacing: -0.5,
     });
-    // Blurb
-    s.addText(t.blurb, {
-      x: x + 0.2, y: y + thumbH + 0.42, w: tileW - 0.4, h: 0.5,
-      fontFace: F.body, fontSize: 9.5, color: C.dim,
+    // Desc
+    s.addText(t.desc, {
+      x: x + 0.15, y: y + 1.1, w: cardW - 0.3, h: 0.9,
+      fontFace: F.body, fontSize: 10.5, color: C.dim,
     });
-    // URL
-    s.addText("↗ " + t.url, {
-      x: x + 0.2, y: y + tileH - 0.35, w: tileW - 0.4, h: 0.25,
-      fontFace: F.mono, fontSize: 8, color: C.magenta, charSpacing: 1, bold: true,
+    // Footer line
+    s.addShape("line", {
+      x: x + 0.15, y: y + 2.0, w: cardW - 0.3, h: 0,
+      line: { color: C.outline, width: 1, dashType: "dash" },
+    });
+    // Audience + examples
+    s.addText(t.audience, {
+      x: x + 0.15, y: y + 2.05, w: cardW - 0.3, h: 0.18,
+      fontFace: F.mono, fontSize: 8, color: C.faint, charSpacing: 2,
+    });
+    s.addText(t.examples, {
+      x: x + 0.15, y: y + 2.22, w: cardW - 0.3, h: 0.2,
+      fontFace: F.head, fontSize: 10, color: t.color, bold: true,
     });
   });
 
@@ -464,7 +466,97 @@ function softCard(slide, x, y, w, h, opts = {}) {
 }
 
 // ============================================================
-// SLIDE 6 — TURESPAÑA: Reto + Externa vs Externia
+// SLIDE 6 — ACTIVACIONES (grid 3+2)
+// ============================================================
+{
+  const s = pptx.addSlide();
+  darkBg(s);
+  brand(s);
+  eyebrow(s, "B · Activaciones públicas · accesibles ahora");
+
+  s.addText([
+    { text: "Producto creado para marcas finales, ", options: { color: C.text } },
+    { text: "en vivo", options: { color: C.magenta, bold: true } },
+  ], {
+    x: 0.5, y: 0.85, w: W - 1.0, h: 0.7,
+    fontFace: F.head, fontSize: 26, bold: true, charSpacing: -1,
+  });
+  s.addText("Cada URL abre la demo real que se usó en el evento del cliente.", {
+    x: 0.5, y: 1.55, w: W - 1.0, h: 0.3,
+    fontFace: F.body, fontSize: 11, color: C.dim,
+  });
+
+  const tiles = [
+    { client: "KPMG",               title: "ComicGen",                  blurb: "Cómic generado con IA en directo. Asistentes son protagonistas.", url: "https://comic-ai-s1ca.onrender.com",   host: "comic-ai-s1ca.onrender.com",   image: A("comicgen-kpmg.png") },
+    { client: "Clinique · INHOUSE", title: "Cartas personalizadas",     blurb: "Cartas de marca con IA, narrativa coherente, listas para imprimir.", url: "https://clinique-bium.onrender.com",  host: "clinique-bium.onrender.com",   image: A("clinique-letter.png") },
+    { client: "Taller IA · ING",    title: "SmartBrush + caricaturas",  blurb: "Caricatura en vivo, edición selectiva por pincel, retratos generativos.", url: "https://taller-ia-ing.onrender.com",  host: "taller-ia-ing.onrender.com",   image: A("smartbrush-caricature.png") },
+    { client: "Talento Joven",      title: "Retro Game",                blurb: "Videojuego retro generado para evento. Sin instalación, jugable en móvil.", url: "https://videogame-witg.onrender.com", host: "videogame-witg.onrender.com", image: null },
+    { client: "Externia · Interno", title: "DeckCraft",                 blurb: "Generador de presentaciones desde brief + sistema de diseño en MD.", url: "https://deckcraft-3u04.onrender.com", host: "deckcraft-3u04.onrender.com", image: A("deckcraft-sample.png") },
+  ];
+
+  const tileW = 2.95;
+  const tileH = 2.35;
+  const gap = 0.1;
+  const startX = 0.55;
+  const topY = 1.95;
+  const bottomY = topY + tileH + gap;
+  const bottomTileW = 4.5;
+  const bottomStartX = (W - (bottomTileW * 2 + gap)) / 2;
+
+  tiles.forEach((t, i) => {
+    const isTop = i < 3;
+    const x = isTop ? startX + i * (tileW + gap) : bottomStartX + (i - 3) * (bottomTileW + gap);
+    const y = isTop ? topY : bottomY;
+    const w = isTop ? tileW : bottomTileW;
+
+    softCard(s, x, y, w, tileH, {
+      hyperlink: { url: t.url, tooltip: t.host },
+    });
+
+    const thumbH = tileH * 0.50;
+    s.addShape("roundRect", {
+      x: x + 0.08, y: y + 0.08, w: w - 0.16, h: thumbH - 0.08,
+      rectRadius: 0.08,
+      fill: { color: "0f0e10" }, line: { color: C.outline, width: 1 },
+    });
+    if (t.image) {
+      s.addImage({ path: t.image, x: x + 0.1, y: y + 0.1, w: w - 0.2, h: thumbH - 0.12, sizing: { type: "cover", w: w - 0.2, h: thumbH - 0.12 }, hyperlink: { url: t.url, tooltip: t.host } });
+    } else {
+      // Retro Game pixel placeholder
+      const pxColors = [C.yellow, C.magenta, C.yellow, C.orange, C.magenta, C.yellow];
+      const startPxX = x + w/2 - (pxColors.length * 0.22 + (pxColors.length-1) * 0.1) / 2;
+      pxColors.forEach((col, pi) => {
+        s.addShape("rect", {
+          x: startPxX + pi * 0.32, y: y + thumbH/2 - 0.11, w: 0.22, h: 0.22,
+          fill: { color: col }, line: { type: "none" },
+        });
+      });
+    }
+    s.addText("● " + t.client, {
+      x: x + 0.18, y: y + 0.15, w: w - 0.4, h: 0.22,
+      fontFace: F.mono, fontSize: 7, color: C.text, charSpacing: 2, bold: true,
+    });
+    s.addText(t.title, {
+      x: x + 0.18, y: y + thumbH + 0.02, w: w - 0.36, h: 0.32,
+      fontFace: F.head, fontSize: 14, bold: true, color: C.text, charSpacing: -0.5,
+      hyperlink: { url: t.url, tooltip: t.host },
+    });
+    s.addText(t.blurb, {
+      x: x + 0.18, y: y + thumbH + 0.35, w: w - 0.36, h: 0.55,
+      fontFace: F.body, fontSize: 9, color: C.dim,
+    });
+    s.addText("↗  " + t.host, {
+      x: x + 0.18, y: y + tileH - 0.32, w: w - 0.36, h: 0.25,
+      fontFace: F.mono, fontSize: 8, color: C.magenta, charSpacing: 1, bold: true,
+      hyperlink: { url: t.url, tooltip: t.host },
+    });
+  });
+
+  pageNum(s, 6);
+}
+
+// ============================================================
+// SLIDE 7 — TURESPAÑA: Reto + Externa vs Externia
 // ============================================================
 {
   const s = pptx.addSlide();
@@ -478,133 +570,127 @@ function softCard(slide, x, y, w, h, opts = {}) {
     { text: "Externa", options: { color: C.magenta, bold: true } },
     { text: " la ganó", options: { color: C.text } },
   ], {
-    x: 0.6, y: 0.95, w: W - 1.2, h: 1.7,
-    fontFace: F.head, fontSize: 38, bold: true, charSpacing: -1, paraSpaceAfter: 0,
+    x: 0.5, y: 0.85, w: W - 1.0, h: 1.5,
+    fontFace: F.head, fontSize: 30, bold: true, charSpacing: -1, paraSpaceAfter: 0,
   });
 
   // Reto card
-  softCard(s, 0.6, 2.8, W - 1.2, 1.2);
+  softCard(s, 0.5, 2.5, W - 1.0, 1.15);
   s.addText("▼ EL RETO", {
-    x: 0.85, y: 2.95, w: 4, h: 0.3,
-    fontFace: F.mono, fontSize: 10, color: C.yellow, bold: true, charSpacing: 3,
+    x: 0.7, y: 2.62, w: 4, h: 0.28,
+    fontFace: F.mono, fontSize: 9, color: C.yellow, bold: true, charSpacing: 3,
   });
   s.addText(
     "Concurso público tier-1, criterios técnicos estrictos, competencia de agencias top. Memoria densa, escenografía ambiciosa, narrativa coherente con el «por qué» de Turespaña.",
     {
-      x: 0.85, y: 3.25, w: W - 1.7, h: 0.7,
-      fontFace: F.body, fontSize: 13, color: C.text,
+      x: 0.7, y: 2.9, w: W - 1.4, h: 0.7,
+      fontFace: F.body, fontSize: 11.5, color: C.text,
     }
   );
 
   // Two columns
-  const colW = (W - 1.4) / 2;
-  const colY = 4.25;
-  const colH = 2.6;
+  const colW = (W - 1.1) / 2;
+  const colY = 3.8;
+  const colH = 3.0;
 
   // Externa col
-  softCard(s, 0.6, colY, colW - 0.05, colH);
+  softCard(s, 0.5, colY, colW, colH);
   s.addText("Externa", {
-    x: 0.85, y: colY + 0.2, w: colW - 0.5, h: 0.4,
-    fontFace: F.head, fontSize: 20, bold: true, color: C.text,
+    x: 0.7, y: colY + 0.18, w: colW - 0.4, h: 0.35,
+    fontFace: F.head, fontSize: 17, bold: true, color: C.text,
   });
   s.addText("Lo que aportó", {
-    x: 0.85, y: colY + 0.6, w: colW - 0.5, h: 0.25,
-    fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 3,
+    x: 0.7, y: colY + 0.5, w: colW - 0.4, h: 0.25,
+    fontFace: F.mono, fontSize: 8, color: C.faint, charSpacing: 3,
   });
   const externaItems = [
     "Cartera tier-1 — Amazon, ING, Caixabank, KPMG, Cámara de Comercio.",
-    "Criterio del equipo sobre qué funciona en cada bloque de memoria.",
+    "Criterio del equipo sobre qué funciona en cada bloque.",
     "Relación de confianza con Turespaña y dominio del cliente institucional.",
   ];
   externaItems.forEach((it, i) => {
-    const y = colY + 1.05 + i * 0.55;
-    s.addText("▸", { x: 0.85, y, w: 0.25, h: 0.4, fontFace: F.head, fontSize: 12, color: C.faint, bold: true, valign: "top" });
-    s.addText(it, { x: 1.10, y, w: colW - 0.7, h: 0.5, fontFace: F.body, fontSize: 12, color: C.text });
+    const y = colY + 0.9 + i * 0.62;
+    s.addText("▸", { x: 0.7, y, w: 0.2, h: 0.5, fontFace: F.head, fontSize: 11, color: C.faint, bold: true, valign: "top" });
+    s.addText(it, { x: 0.9, y, w: colW - 0.55, h: 0.6, fontFace: F.body, fontSize: 10.5, color: C.text });
   });
 
   // Externia col
-  const x2 = 0.6 + colW + 0.1;
-  softCard(s, x2, colY, colW - 0.05, colH, { line: { color: C.magenta, width: 1 } });
+  const x2 = 0.5 + colW + 0.1;
+  softCard(s, x2, colY, colW, colH, { line: { color: C.magenta, width: 1 } });
   s.addText("Externia", {
-    x: x2 + 0.25, y: colY + 0.2, w: colW - 0.5, h: 0.4,
-    fontFace: F.head, fontSize: 20, bold: true, color: C.magenta,
+    x: x2 + 0.2, y: colY + 0.18, w: colW - 0.4, h: 0.35,
+    fontFace: F.head, fontSize: 17, bold: true, color: C.magenta,
   });
   s.addText("Lo que aportó", {
-    x: x2 + 0.25, y: colY + 0.6, w: colW - 0.5, h: 0.25,
-    fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 3,
+    x: x2 + 0.2, y: colY + 0.5, w: colW - 0.4, h: 0.25,
+    fontFace: F.mono, fontSize: 8, color: C.faint, charSpacing: 3,
   });
   const externiaItems = [
-    "Agente entrenado con histórico de concursos Turespaña y feedback público.",
-    "Inteligencia interna de Externa sobre qué funciona por bloque, hecha sistema.",
-    "Investigación profunda automática del «porqué» temático del cliente.",
-    "Renders de escenografía generados con IA — propuesta visualmente rica.",
+    "Agente entrenado con histórico Turespaña + feedback público.",
+    "Inteligencia interna de Externa hecha sistema replicable.",
+    "Investigación profunda automática del «porqué» del cliente.",
+    "Renders de escenografía con IA — propuesta visualmente rica.",
   ];
   externiaItems.forEach((it, i) => {
-    const y = colY + 1.05 + i * 0.42;
-    s.addText("▸", { x: x2 + 0.25, y, w: 0.25, h: 0.4, fontFace: F.head, fontSize: 12, color: C.magenta, bold: true, valign: "top" });
-    s.addText(it, { x: x2 + 0.50, y, w: colW - 0.7, h: 0.42, fontFace: F.body, fontSize: 11.5, color: C.text });
-  });
-
-  pageNum(s, 6);
-}
-
-// ============================================================
-// SLIDE 7 — TURESPAÑA: Quote (impact)
-// ============================================================
-{
-  const s = pptx.addSlide();
-  darkBg(s);
-
-  // Ambient circles
-  s.addShape("ellipse", {
-    x: W/2 - 5, y: -2, w: 10, h: 10,
-    fill: { color: C.magenta, transparency: 92 }, line: { type: "none" },
-  });
-
-  brand(s);
-  eyebrow(s, "C · Cita del cliente");
-
-  // Massive opening quote mark
-  s.addText("“", {
-    x: 0.6, y: 1.4, w: 2, h: 2,
-    fontFace: F.head, fontSize: 200, color: C.magenta, bold: true,
-  });
-
-  // Quote
-  s.addText([
-    { text: "La IA no ganó la convención.\n", options: { color: C.text } },
-    { text: "La ganó ", options: { color: C.text } },
-    { text: "Externa", options: { color: C.magenta, bold: true } },
-    { text: ".", options: { color: C.text } },
-  ], {
-    x: 1.5, y: 2.6, w: W - 3, h: 2.2,
-    fontFace: F.head, fontSize: 56, bold: true, align: "center", charSpacing: -2,
-  });
-
-  // Subquote
-  s.addText(
-    "Pero la IA hizo posible una propuesta más rica de la que habríamos podido permitirnos meter en cada concurso.",
-    {
-      x: 2, y: 5.0, w: W - 4, h: 1.0,
-      fontFace: F.body, fontSize: 18, color: C.dim, align: "center", italic: true,
-    }
-  );
-
-  // Result chip
-  s.addShape("roundRect", {
-    x: W/2 - 2.4, y: 6.4, w: 4.8, h: 0.6, rectRadius: 0.3,
-    fill: { color: "1A3A28" }, line: { color: "2B6A48", width: 1 },
-  });
-  s.addText("✓  Externa ganó la V Convención", {
-    x: W/2 - 2.4, y: 6.4, w: 4.8, h: 0.6,
-    fontFace: F.head, fontSize: 16, color: C.green, bold: true, align: "center", valign: "middle",
+    const y = colY + 0.9 + i * 0.47;
+    s.addText("▸", { x: x2 + 0.2, y, w: 0.2, h: 0.45, fontFace: F.head, fontSize: 11, color: C.magenta, bold: true, valign: "top" });
+    s.addText(it, { x: x2 + 0.4, y, w: colW - 0.55, h: 0.45, fontFace: F.body, fontSize: 10.5, color: C.text });
   });
 
   pageNum(s, 7);
 }
 
 // ============================================================
-// SLIDE 8 — METODOLOGÍA (timeline)
+// SLIDE 8 — TURESPAÑA: Quote
+// ============================================================
+{
+  const s = pptx.addSlide();
+  darkBg(s);
+
+  s.addShape("ellipse", {
+    x: W/2 - 4, y: -1.5, w: 8, h: 8,
+    fill: { color: C.magenta, transparency: 92 }, line: { type: "none" },
+  });
+
+  brand(s);
+  eyebrow(s, "C · Cita del caso");
+
+  s.addText("“", {
+    x: 0.5, y: 1.2, w: 1.8, h: 1.8,
+    fontFace: F.head, fontSize: 160, color: C.magenta, bold: true,
+  });
+
+  s.addText([
+    { text: "La IA no ganó la convención.\n", options: { color: C.text } },
+    { text: "La ganó ", options: { color: C.text } },
+    { text: "Externa", options: { color: C.magenta, bold: true } },
+  ], {
+    x: 1.2, y: 2.4, w: W - 2.4, h: 2.3,
+    fontFace: F.head, fontSize: 42, bold: true, align: "center", charSpacing: -1.5,
+  });
+
+  s.addText(
+    "Pero la IA hizo posible una propuesta más rica de la que habríamos podido permitirnos meter en cada concurso.",
+    {
+      x: 1.5, y: 4.95, w: W - 3, h: 1.0,
+      fontFace: F.body, fontSize: 15, color: C.dim, align: "center", italic: true,
+    }
+  );
+
+  s.addShape("roundRect", {
+    x: W/2 - 2.3, y: 6.3, w: 4.6, h: 0.55, rectRadius: 0.28,
+    fill: { color: C.greenBg }, line: { color: C.greenBd, width: 1 },
+  });
+  s.addText("✓  Externa ganó la V Convención", {
+    x: W/2 - 2.3, y: 6.3, w: 4.6, h: 0.55,
+    fontFace: F.head, fontSize: 14, color: C.green, bold: true, align: "center", valign: "middle",
+  });
+
+  pageNum(s, 8);
+}
+
+// ============================================================
+// SLIDE 9 — METODOLOGÍA
 // ============================================================
 {
   const s = pptx.addSlide();
@@ -613,87 +699,77 @@ function softCard(slide, x, y, w, h, opts = {}) {
   eyebrow(s, "D · Cómo trabajamos");
 
   s.addText("Cómo entramos en una agencia", {
-    x: 0.6, y: 0.95, w: W - 1.2, h: 0.9,
-    fontFace: F.head, fontSize: 40, bold: true, color: C.text, charSpacing: -1,
+    x: 0.5, y: 0.85, w: W - 1.0, h: 0.7,
+    fontFace: F.head, fontSize: 32, bold: true, color: C.text, charSpacing: -1,
   });
   s.addText(
-    "Lo primero que hacemos no es construir. Es observar, mapear y decidir qué construir primero.",
+    "Lo primero no es construir. Es observar, mapear y decidir qué construir primero.",
     {
-      x: 0.6, y: 1.85, w: W - 1.2, h: 0.5,
-      fontFace: F.body, fontSize: 15, color: C.dim,
+      x: 0.5, y: 1.6, w: W - 1.0, h: 0.4,
+      fontFace: F.body, fontSize: 12, color: C.dim,
     }
   );
 
-  // Timeline line (horizontal)
-  const tlY = 3.0;
-  const tlPad = 0.6;
+  // Timeline
+  const tlY = 2.55;
+  const tlPad = 0.5;
   const tlW = W - tlPad * 2;
-  s.addShape("line", { x: tlPad, y: tlY, w: tlW, h: 0, line: { color: C.outline2, width: 2 } });
-  // Gradient overlay (magenta-orange-yellow) — approximated as a magenta bar full width
-  s.addShape("rect", { x: tlPad, y: tlY - 0.04, w: tlW, h: 0.08, fill: { color: C.magenta, transparency: 50 }, line: { type: "none" } });
+  s.addShape("rect", { x: tlPad, y: tlY - 0.025, w: tlW, h: 0.05, fill: { color: C.magenta, transparency: 30 }, line: { type: "none" } });
 
   const phases = [
-    { n: "01", when: "Semanas 1-3", name: "Inmersión", hot: true,
-      desc: "Dentro del equipo en cada departamento. Mapa de tareas que consumen tiempo, las que bloquean valor, quick wins ya identificados." },
-    { n: "02", when: "Meses 1-2", name: "Capa rápida",
-      desc: "Ganancias visibles en semanas. Agente redactor, transcripción a informe, generador de decks." },
-    { n: "03", when: "Meses 2-4", name: "Capa profunda",
-      desc: "Agentes conectados a datos históricos. 20 años de propuestas consultables, pliegos estructurados, feedback público digerido." },
-    { n: "04", when: "Meses 4-9", name: "Escala",
-      desc: "Sistema operando que mejora con cada concurso. Modelo de uso interno, casos abiertos del cliente, roadmap consolidado." },
+    { n: "01", when: "Sem 1-3", name: "Inmersión", hot: true, desc: "Dentro del equipo. Mapa de tareas que consumen tiempo, quick wins identificados." },
+    { n: "02", when: "Mes 1-2", name: "Capa rápida", desc: "Ganancias visibles en semanas. Agente redactor, transcripción, generador de decks." },
+    { n: "03", when: "Mes 2-4", name: "Capa profunda", desc: "Agentes conectados a datos. Histórico de propuestas consultable, pliegos estructurados." },
+    { n: "04", when: "Mes 4-9", name: "Escala", desc: "Sistema que mejora con cada concurso. Métricas de uso, roadmap consolidado." },
   ];
   const phW = tlW / 4;
   phases.forEach((p, i) => {
     const x = tlPad + i * phW;
-    // Number circle
     s.addShape("ellipse", {
-      x: x + phW/2 - 0.3, y: tlY - 0.3, w: 0.6, h: 0.6,
+      x: x + phW/2 - 0.27, y: tlY - 0.27, w: 0.54, h: 0.54,
       fill: { color: p.hot ? C.magenta : C.surfaceHi },
       line: { color: p.hot ? C.magenta : C.outline2, width: 1.5 },
     });
     s.addText(p.n, {
-      x: x + phW/2 - 0.3, y: tlY - 0.3, w: 0.6, h: 0.6,
-      fontFace: F.mono, fontSize: 12, color: p.hot ? "1A0008" : C.dim, bold: true, align: "center", valign: "middle",
+      x: x + phW/2 - 0.27, y: tlY - 0.27, w: 0.54, h: 0.54,
+      fontFace: F.mono, fontSize: 10, color: p.hot ? "1A0008" : C.dim, bold: true, align: "center", valign: "middle",
     });
-    // When
     s.addText(p.when, {
-      x: x + 0.2, y: tlY + 0.55, w: phW - 0.4, h: 0.3,
-      fontFace: F.mono, fontSize: 10, color: C.faint, align: "center", charSpacing: 3,
+      x: x + 0.1, y: tlY + 0.45, w: phW - 0.2, h: 0.28,
+      fontFace: F.mono, fontSize: 9, color: C.faint, align: "center", charSpacing: 3,
     });
-    // Name
     s.addText(p.name, {
-      x: x + 0.2, y: tlY + 0.95, w: phW - 0.4, h: 0.5,
-      fontFace: F.head, fontSize: 20, bold: true,
+      x: x + 0.1, y: tlY + 0.78, w: phW - 0.2, h: 0.45,
+      fontFace: F.head, fontSize: 16, bold: true,
       color: p.hot ? C.magenta : C.text, align: "center", charSpacing: -0.5,
     });
-    // Desc
     s.addText(p.desc, {
-      x: x + 0.2, y: tlY + 1.6, w: phW - 0.4, h: 1.6,
-      fontFace: F.body, fontSize: 11, color: C.dim, align: "center",
+      x: x + 0.1, y: tlY + 1.32, w: phW - 0.2, h: 1.5,
+      fontFace: F.body, fontSize: 9.5, color: C.dim, align: "center",
     });
   });
 
   // Felt block
-  const fY = 6.0;
-  s.addShape("line", { x: 0.6, y: fY - 0.15, w: W - 1.2, h: 0, line: { color: C.outline, width: 1, dashType: "dash" } });
+  const fY = 5.75;
+  s.addShape("line", { x: 0.5, y: fY - 0.12, w: W - 1.0, h: 0, line: { color: C.outline, width: 1, dashType: "dash" } });
   s.addText("▼ DESDE EL PRIMER MES", {
-    x: 0.6, y: fY, w: 4, h: 0.3,
-    fontFace: F.mono, fontSize: 10, color: C.yellow, bold: true, charSpacing: 3,
+    x: 0.5, y: fY, w: 4, h: 0.28,
+    fontFace: F.mono, fontSize: 9, color: C.yellow, bold: true, charSpacing: 3,
   });
   s.addText([
     { text: "No sienten que les han metido un proyecto encima. Sienten que tienen ", options: { color: C.text } },
     { text: "herramientas nuevas", options: { color: C.magenta, bold: true } },
     { text: " que están haciendo el trabajo aburrido por ellos.", options: { color: C.text } },
   ], {
-    x: 0.6, y: fY + 0.35, w: W - 1.2, h: 1.0,
-    fontFace: F.head, fontSize: 18, italic: true,
+    x: 0.5, y: fY + 0.3, w: W - 1.0, h: 0.9,
+    fontFace: F.head, fontSize: 15, italic: true,
   });
 
-  pageNum(s, 8);
+  pageNum(s, 9);
 }
 
 // ============================================================
-// SLIDE 9 — I+D ABIERTO (3D Worlds)
+// SLIDE 10 — I+D ABIERTO
 // ============================================================
 {
   const s = pptx.addSlide();
@@ -702,174 +778,180 @@ function softCard(slide, x, y, w, h, opts = {}) {
   eyebrow(s, "E · I+D abierto · Q2 2026", { color: C.yellow });
 
   s.addText("Plataforma 3D · World API", {
-    x: 0.6, y: 0.95, w: W - 1.2, h: 0.9,
-    fontFace: F.head, fontSize: 40, bold: true, color: C.text, charSpacing: -1,
+    x: 0.5, y: 0.85, w: W - 1.0, h: 0.7,
+    fontFace: F.head, fontSize: 32, bold: true, color: C.text, charSpacing: -1,
   });
   s.addText([
-    { text: "No solo construimos lo que se compra hoy. Investigamos lo que va a ", options: { color: C.dim } },
+    { text: "Investigamos lo que va a ", options: { color: C.dim } },
     { text: "redefinir el sector", options: { color: C.magenta, bold: true } },
     { text: " en los próximos 18 meses.", options: { color: C.dim } },
   ], {
-    x: 0.6, y: 1.95, w: W - 1.2, h: 0.5,
-    fontFace: F.body, fontSize: 15,
+    x: 0.5, y: 1.55, w: W - 1.0, h: 0.4,
+    fontFace: F.body, fontSize: 13,
   });
 
   // 4 KPIs row
-  const kY = 2.7;
+  const kY = 2.25;
   const kpis = [
     { v: "Validada",     l: "Tecnología" },
     { v: "En formación", l: "Mercado" },
     { v: "12-18 m",      l: "Ventana competitiva" },
     { v: "< $100",       l: "Coste de validación" },
   ];
-  const kpiW = (W - 1.4) / 4;
+  const kpiW = (W - 1.15) / 4;
   kpis.forEach((kp, i) => {
-    const x = 0.6 + i * (kpiW + 0.05);
-    softCard(s, x, kY, kpiW - 0.1, 1.1);
+    const x = 0.5 + i * (kpiW + 0.05);
+    softCard(s, x, kY, kpiW, 0.95);
     s.addText(kp.v, {
-      x: x + 0.2, y: kY + 0.18, w: kpiW - 0.5, h: 0.4,
-      fontFace: F.head, fontSize: 18, color: C.magenta, bold: true,
+      x: x + 0.15, y: kY + 0.15, w: kpiW - 0.3, h: 0.35,
+      fontFace: F.head, fontSize: 16, color: C.magenta, bold: true,
     });
     s.addText(kp.l, {
-      x: x + 0.2, y: kY + 0.65, w: kpiW - 0.5, h: 0.3,
-      fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 3,
+      x: x + 0.15, y: kY + 0.55, w: kpiW - 0.3, h: 0.3,
+      fontFace: F.mono, fontSize: 8, color: C.faint, charSpacing: 3,
     });
   });
 
   // Backers strip
-  const bY = 4.05;
-  s.addShape("line", { x: 0.6, y: bY, w: W - 1.2, h: 0, line: { color: C.outline, width: 1 } });
+  const bY = 3.45;
+  s.addShape("line", { x: 0.5, y: bY, w: W - 1.0, h: 0, line: { color: C.outline, width: 1 } });
   s.addText("BACKERS", {
-    x: 0.6, y: bY + 0.15, w: 1.5, h: 0.3,
-    fontFace: F.mono, fontSize: 10, color: C.faint, charSpacing: 4,
+    x: 0.5, y: bY + 0.15, w: 1.2, h: 0.3,
+    fontFace: F.mono, fontSize: 9, color: C.faint, charSpacing: 4,
   });
-  s.addText("NVIDIA  ·  AMD  ·  Autodesk  ·  $1.290M en financiación · World API pública desde enero 2026", {
-    x: 2.1, y: bY + 0.15, w: W - 2.7, h: 0.3,
-    fontFace: F.mono, fontSize: 11, color: C.text, charSpacing: 2, bold: true,
+  s.addText("NVIDIA  ·  AMD  ·  Autodesk  ·  $1.290M  ·  World API pública desde enero 2026", {
+    x: 1.7, y: bY + 0.15, w: W - 2.2, h: 0.3,
+    fontFace: F.mono, fontSize: 10, color: C.text, charSpacing: 2, bold: true,
   });
 
   // 3 puntos
-  const pY = 4.85;
+  const pY = 4.15;
   const points = [
-    { n: "01", t: "World API",         d: "El motor de World Labs. Una sola foto → mundo 3D navegable persistente." },
-    { n: "02", t: "Gaussian Splatting", d: "Renderizado que alcanzó madurez de producción en 2025. Curva de coste ya cruzó." },
-    { n: "03", t: "First mover MICE",   d: "Nadie ha verticalizado esta tecnología para sector eventos. Ventana real." },
+    { n: "01", t: "World API",          d: "El motor de World Labs. Una sola foto → mundo 3D navegable persistente." },
+    { n: "02", t: "Gaussian Splatting", d: "Renderizado que alcanzó madurez en 2025. La curva de coste ya cruzó." },
+    { n: "03", t: "First mover MICE",   d: "Nadie ha verticalizado esta tecnología para eventos. Ventana real." },
   ];
-  const ptW = (W - 1.4) / 3;
+  const ptW = (W - 1.2) / 3;
   points.forEach((p, i) => {
-    const x = 0.6 + i * (ptW + 0.1);
-    softCard(s, x, pY, ptW - 0.1, 1.5);
+    const x = 0.5 + i * (ptW + 0.1);
+    softCard(s, x, pY, ptW, 1.5);
     s.addText(p.n + " · " + p.t.toUpperCase(), {
-      x: x + 0.2, y: pY + 0.2, w: ptW - 0.5, h: 0.3,
-      fontFace: F.mono, fontSize: 10, color: C.magenta, charSpacing: 2, bold: true,
+      x: x + 0.15, y: pY + 0.18, w: ptW - 0.3, h: 0.3,
+      fontFace: F.mono, fontSize: 9, color: C.magenta, charSpacing: 2, bold: true,
     });
     s.addText(p.d, {
-      x: x + 0.2, y: pY + 0.6, w: ptW - 0.5, h: 0.85,
-      fontFace: F.body, fontSize: 12, color: C.text,
+      x: x + 0.15, y: pY + 0.55, w: ptW - 0.3, h: 0.85,
+      fontFace: F.body, fontSize: 10, color: C.text,
     });
   });
 
-  // Punch line
+  // Punch
   s.addText([
-    { text: "Cliente que entre ahora en esta tecnología tiene ", options: { color: C.text } },
+    { text: "Cliente que entre ahora tiene ", options: { color: C.text } },
     { text: "18 meses de ventaja competitiva real", options: { color: C.magenta, bold: true } },
-    { text: ".", options: { color: C.text } },
   ], {
-    x: 0.6, y: 6.55, w: W - 1.2, h: 0.5,
-    fontFace: F.head, fontSize: 17, bold: false, italic: true, align: "center",
-  });
-
-  pageNum(s, 9);
-}
-
-// ============================================================
-// SLIDE 10 — CIERRE (Blog + Contacto)
-// ============================================================
-{
-  const s = pptx.addSlide();
-  darkBg(s);
-
-  // Ambient circles
-  s.addShape("ellipse", {
-    x: -3, y: H - 4, w: 8, h: 8,
-    fill: { color: C.magenta, transparency: 92 }, line: { type: "none" },
-  });
-  s.addShape("ellipse", {
-    x: W - 4, y: -3, w: 7, h: 7,
-    fill: { color: C.yellow, transparency: 94 }, line: { type: "none" },
-  });
-
-  brand(s);
-  eyebrow(s, "F · Pipeline editorial autónomo", { color: C.yellow });
-
-  // Blog proof
-  softCard(s, 0.6, 1.0, W - 1.2, 1.8);
-  s.addText("externia.ai/blog", {
-    x: 0.85, y: 1.2, w: W - 1.7, h: 0.3,
-    fontFace: F.mono, fontSize: 11, color: C.faint, charSpacing: 4,
-  });
-  s.addText([
-    { text: "El blog de Externia se ", options: { color: C.text } },
-    { text: "escribe solo", options: { color: C.magenta, bold: true } },
-  ], {
-    x: 0.85, y: 1.55, w: W - 1.7, h: 0.7,
-    fontFace: F.head, fontSize: 28, bold: true, charSpacing: -1,
-  });
-  s.addText(
-    "Posts publicados sin intervención humana. Investigación, redacción, optimización SEO, formato, publicación — todo lo opera un sistema de agentes Externia desde hace meses.",
-    {
-      x: 0.85, y: 2.25, w: W - 1.7, h: 0.5,
-      fontFace: F.body, fontSize: 12, color: C.dim,
-    }
-  );
-
-  // The closing pitch
-  s.addText([
-    { text: "Esto opera hoy\n", options: { color: C.text } },
-    { text: "Hablemos de ", options: { color: C.text } },
-    { text: "lo siguiente", options: { color: C.magenta, bold: true } },
-  ], {
-    x: 0.6, y: 3.4, w: W - 1.2, h: 1.8,
-    fontFace: F.head, fontSize: 64, bold: true, align: "center", charSpacing: -2,
-  });
-
-  // Contact CTA buttons
-  const ctaY = 5.7;
-
-  // Primary CTA
-  s.addShape("roundRect", {
-    x: W/2 - 4.6, y: ctaY, w: 4.4, h: 0.85, rectRadius: 0.12,
-    fill: { color: C.magenta }, line: { type: "none" },
-  });
-  s.addText("✉  g.prado@externia.ai", {
-    x: W/2 - 4.6, y: ctaY, w: 4.4, h: 0.5,
-    fontFace: F.head, fontSize: 17, color: "1A0008", bold: true, align: "center", valign: "middle",
-  });
-  s.addText("Una conversación, no un formulario", {
-    x: W/2 - 4.6, y: ctaY + 0.45, w: 4.4, h: 0.35,
-    fontFace: F.mono, fontSize: 10, color: "5C0018", align: "center", valign: "middle", charSpacing: 2,
-  });
-
-  // Secondary CTA
-  s.addShape("roundRect", {
-    x: W/2 + 0.2, y: ctaY, w: 4.4, h: 0.85, rectRadius: 0.12,
-    fill: { color: C.surfaceHi }, line: { color: C.outline2, width: 1 },
-  });
-  s.addText("▲  externia.ai", {
-    x: W/2 + 0.2, y: ctaY, w: 4.4, h: 0.5,
-    fontFace: F.head, fontSize: 17, color: C.text, bold: true, align: "center", valign: "middle",
-  });
-  s.addText("Web corporativa · activaciones · blog", {
-    x: W/2 + 0.2, y: ctaY + 0.45, w: 4.4, h: 0.35,
-    fontFace: F.mono, fontSize: 10, color: C.faint, align: "center", valign: "middle", charSpacing: 2,
+    x: 0.5, y: 6.0, w: W - 1.0, h: 0.7,
+    fontFace: F.head, fontSize: 16, italic: true, align: "center",
   });
 
   pageNum(s, 10);
 }
 
 // ============================================================
-// SAVE
+// SLIDE 11 — CIERRE
 // ============================================================
+{
+  const s = pptx.addSlide();
+  darkBg(s);
+
+  s.addShape("ellipse", { x: -2.5, y: H - 3, w: 6, h: 6, fill: { color: C.magenta, transparency: 92 }, line: { type: "none" } });
+  s.addShape("ellipse", { x: W - 3, y: -2.5, w: 5.5, h: 5.5, fill: { color: C.yellow, transparency: 94 }, line: { type: "none" } });
+
+  brand(s);
+  eyebrow(s, "F · Pipeline editorial autónomo", { color: C.yellow });
+
+  // Blog proof card — clickable
+  softCard(s, 0.5, 0.9, W - 1.0, 1.7, {
+    hyperlink: { url: "https://externia.ai/blog", tooltip: "Abrir el blog autónomo" },
+  });
+  s.addText("externia.ai/blog", {
+    x: 0.7, y: 1.05, w: W - 1.4, h: 0.3,
+    fontFace: F.mono, fontSize: 10, color: C.faint, charSpacing: 4,
+    hyperlink: { url: "https://externia.ai/blog" },
+  });
+  s.addText([
+    { text: "El blog de Externia se ", options: { color: C.text } },
+    { text: "escribe solo", options: { color: C.magenta, bold: true } },
+  ], {
+    x: 0.7, y: 1.4, w: W - 1.4, h: 0.55,
+    fontFace: F.head, fontSize: 22, bold: true, charSpacing: -1,
+    hyperlink: { url: "https://externia.ai/blog" },
+  });
+  s.addText(
+    "Posts publicados sin intervención humana en la cadena editorial. Agentes de Externia operando en producción desde hace meses.",
+    {
+      x: 0.7, y: 2.0, w: W - 1.4, h: 0.5,
+      fontFace: F.body, fontSize: 11, color: C.dim,
+    }
+  );
+
+  // Closing pitch
+  s.addText([
+    { text: "Esto opera hoy\n", options: { color: C.text } },
+    { text: "Hablemos de ", options: { color: C.text } },
+    { text: "lo siguiente", options: { color: C.magenta, bold: true } },
+  ], {
+    x: 0.5, y: 3.1, w: W - 1.0, h: 1.7,
+    fontFace: F.head, fontSize: 46, bold: true, align: "center", charSpacing: -1.5,
+  });
+
+  // CTA buttons (clickable)
+  const ctaY = 5.4;
+  // Primary
+  s.addShape("roundRect", {
+    x: 0.6, y: ctaY, w: 4.3, h: 0.9, rectRadius: 0.1,
+    fill: { color: C.magenta }, line: { type: "none" },
+    hyperlink: { url: "mailto:g.prado@externia.ai", tooltip: "Escríbenos" },
+  });
+  s.addText("✉  g.prado@externia.ai", {
+    x: 0.6, y: ctaY + 0.05, w: 4.3, h: 0.5,
+    fontFace: F.head, fontSize: 15, color: "1A0008", bold: true, align: "center", valign: "middle",
+    hyperlink: { url: "mailto:g.prado@externia.ai", tooltip: "Escríbenos" },
+  });
+  s.addText("Una conversación, no un formulario", {
+    x: 0.6, y: ctaY + 0.5, w: 4.3, h: 0.35,
+    fontFace: F.mono, fontSize: 9, color: "5C0018", align: "center", valign: "middle", charSpacing: 2,
+    hyperlink: { url: "mailto:g.prado@externia.ai" },
+  });
+
+  // Secondary
+  s.addShape("roundRect", {
+    x: 5.1, y: ctaY, w: 4.3, h: 0.9, rectRadius: 0.1,
+    fill: { color: C.surfaceHi }, line: { color: C.outline2, width: 1 },
+    hyperlink: { url: "https://externia.ai", tooltip: "Web corporativa" },
+  });
+  s.addText("▲  externia.ai", {
+    x: 5.1, y: ctaY + 0.05, w: 4.3, h: 0.5,
+    fontFace: F.head, fontSize: 15, color: C.text, bold: true, align: "center", valign: "middle",
+    hyperlink: { url: "https://externia.ai", tooltip: "Web corporativa" },
+  });
+  s.addText("Web corporativa · activaciones · blog", {
+    x: 5.1, y: ctaY + 0.5, w: 4.3, h: 0.35,
+    fontFace: F.mono, fontSize: 9, color: C.faint, align: "center", valign: "middle", charSpacing: 2,
+    hyperlink: { url: "https://externia.ai" },
+  });
+
+  // Showcase link (the landing itself)
+  s.addText("↗  externia-showcase.onrender.com — explora cada activación en vivo", {
+    x: 0.5, y: 6.7, w: W - 1.0, h: 0.3,
+    fontFace: F.mono, fontSize: 10, color: C.magenta, align: "center", charSpacing: 2, bold: true,
+    hyperlink: { url: "https://externia-showcase.onrender.com", tooltip: "El showcase completo" },
+  });
+
+  pageNum(s, 11);
+}
+
+// SAVE
 const outFile = path.resolve(__dirname, "..", "Externia-Showcase-Deck.pptx");
 pptx.writeFile({ fileName: outFile }).then(fn => {
   console.log("✓ Generated:", fn);
