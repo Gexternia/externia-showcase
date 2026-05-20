@@ -16,3 +16,8 @@ desktop.ini
 
 # Logs
 *.log
+
+# PPTX deck build artefacts (script is the source; pptx output queda fuera del repo
+# o lo commiteamos explicitamente cuando hagamos release)
+deck/node_modules/
+deck/package-lock.json
